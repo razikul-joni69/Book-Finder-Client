@@ -1,9 +1,9 @@
-import App from "../App";
+import HeroSection from "../components/HeroSection/HeroSection";
 
 const Home = () => {
     return (
         <div>
-            <App/>
+            <HeroSection />
         </div>
     );
 };
