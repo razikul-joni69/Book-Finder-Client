@@ -1,22 +1,45 @@
 import type { MenuProps } from "antd";
 import { Avatar, Button, Dropdown } from "antd";
+import { signOut } from "firebase/auth";
 import { Link, NavLink } from "react-router-dom";
 import logo from "../../assets/images/logo.jpg";
-import { useAppSelector } from "../../redux/hooks";
+import auth from "../../configs/firebase.config";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { setUser } from "../../redux/user/userSlice";
+import { showErrorMessage, showSuccessMessage } from "../../utils/NotifyToast";
 
 const Navbar = () => {
     const { user, isLoading } = useAppSelector((state) => state.user);
+    const dispatch = useAppDispatch();
 
     const items: MenuProps["items"] = [
         {
             key: "1",
             label: (
                 <Link to="/profile">
-                    {user?.name} <span className="bg-white rounded-full px-[7px]">Profile</span>
+                    {user?.name}{" "}
+                    <span className="bg-white rounded-full px-[7px]">
+                        Profile
+                    </span>
                 </Link>
             ),
         },
         {
+            onClick: () => {
+                signOut(auth)
+                    .then(() => {
+                        console.log("log 01");
+
+                        dispatch(setUser(null));
+                        console.log("log 02");
+                        showSuccessMessage("SignOut Successful! 🆗");
+                        console.log("log 03");
+                    })
+                    .catch((err) => {
+                        console.log("log 04");
+                        showErrorMessage(err.message);
+                    });
+            },
             key: "4",
             danger: true,
             label: "LogOut",

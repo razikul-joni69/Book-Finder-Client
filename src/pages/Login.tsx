@@ -1,24 +1,14 @@
-import { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { AuthContext } from "../providers/AuthProvider";
 import { useAppDispatch } from "../redux/hooks";
-import { loginUser, setUser } from "../redux/user/userSlice";
+import { continueWithGoogle, loginUser } from "../redux/user/userSlice";
+import { showErrorMessage, showSuccessMessage } from "../utils/NotifyToast";
 
 const Login = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch();
 
     document.title = "Book Finder | Login";
-
-    // const {
-    //     continueWithGoogle,
-    //     continueWithGithub,
-    //     continueWithFacebook,
-    //     emailPasswordUserLogin,
-    //     error,
-    //     setError,
-    // } = useContext(AuthContext);
 
     const from = location.state?.from?.pathname || "/";
 
@@ -28,43 +18,45 @@ const Login = () => {
         const email = e.target.email.value;
         const password = e.target.password.value;
 
-        dispatch(loginUser({ email, password }))
-        navigate(from, { replace: true });
+        const emailPasswordUserLogin = dispatch(loginUser({ email, password }));
 
-        // if (password.length < 6) {
-        //     showErrorMessage("Password must be at least 6 characters");
-        //     return setError("Password must be at least 6 characters");
-        // } else {
-        //     emailPasswordUserLogin(email, password)
-        //         .then(() => {
-        //             setError("");
-        //             showSuccessMessage("👍 Email SignIn Successful!");
-        //             navigate(from, { replace: true });
-        //         })
-        //         .catch((err) => {
-        //             setError(err.message);
-        //             showErrorMessage(err.message);
-        //         });
-        // }
+        if (password.length < 6) {
+            showErrorMessage("Password must be at least 6 characters");
+        } else {
+            emailPasswordUserLogin
+                .then((res) => {
+                    if (res?.type === "user/login/fulfilled") {
+                        showSuccessMessage("👍 Email SignIn Successful!");
+                        navigate(from, { replace: true });
+                    } else if (res?.type === "user/login/rejected") {
+                        showErrorMessage(res?.error?.message);
+                    }
+                })
+                .catch((err: any) => {
+                    showErrorMessage(err.message);
+                });
+        }
     };
 
-    // const handleGoogleLogin = () => {
-    //     continueWithGoogle()
-    //         .then((res) => {
-    //             saveUserToDb(
-    //                 res?.user?.displayName,
-    //                 res?.user.email,
-    //                 res?.user.photoURL
-    //             );
-    //             setError("");
-    //             showSuccessMessage("👍 Google SignIn Successful!");
-    //             navigate(from, { replace: true });
-    //         })
-    //         .catch((err) => {
-    //             setError(err.message);
-    //             showErrorMessage(err.message);
-    //         });
-    // };
+    const handleGoogleLogin = () => {
+        dispatch(continueWithGoogle())
+            .then((res) => {
+                console.log(res);
+                
+                // saveUserToDb(
+                //     res?.user?.displayName,
+                //     res?.user.email,
+                //     res?.user.photoURL
+                // );
+                // setError("");
+                showSuccessMessage("👍 Google SignIn Successful!");
+                navigate(from, { replace: true });
+            })
+            .catch((err) => {
+                // setError(err.message);
+                showErrorMessage(err.message);
+            });
+    };
 
     // const handleGithubLogin = () => {
     //     continueWithGithub()
@@ -185,7 +177,7 @@ const Login = () => {
                                 Facebook
                             </button>
                             <button
-                                // onClick={handleGoogleLogin}
+                                onClick={handleGoogleLogin}
                                 type="button"
                                 className="transition duration-200 border border-gray-200 dark:text-white text-gray-500 w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-normal text-center inline-block"
                             >

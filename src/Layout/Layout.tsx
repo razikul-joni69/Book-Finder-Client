@@ -1,6 +1,7 @@
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import Footer from "../components/Footer/Footer";
 import Navbar from "../components/Navbar/Navbar";
 import auth from "../configs/firebase.config";
@@ -27,6 +28,7 @@ const Layout = () => {
             <Navbar />
             <Outlet />
             <Footer />
+            <ToastContainer />
         </div>
     );
 };

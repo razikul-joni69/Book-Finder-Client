@@ -1,6 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+    GoogleAuthProvider,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+} from "firebase/auth";
 import auth from "../../configs/firebase.config";
+
+const googleProvider = new GoogleAuthProvider();
 
 interface IUser {
     user: {
@@ -37,14 +43,28 @@ export const loginUser = createAsyncThunk(
     }
 );
 
+export const continueWithGoogle = createAsyncThunk(
+    "user/continueWithGoogle",
+    async () => {
+        const data = await signInWithPopup(auth, googleProvider);
+        return data.user;
+    }
+);
+
 export const userSlice = createSlice({
     name: "user",
     initialState,
     reducers: {
         setUser: (state, action) => {
-            state.user.email = action.payload.email;
-            state.user.name = action.payload.displayName;
-            state.user.photoUrl = action.payload.photoURL;
+            if (action.payload === null) {
+                state.user.email = action.payload;
+                state.user.name = action.payload;
+                state.user.photoUrl = action.payload;
+            } else {
+                state.user.email = action.payload.email;
+                state.user.name = action.payload.displayName;
+                state.user.photoUrl = action.payload.photoURL;
+            }
         },
         setLoading: (state, action) => {
             state.isLoading = action.payload;
