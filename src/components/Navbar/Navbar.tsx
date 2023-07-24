@@ -2,12 +2,19 @@ import type { MenuProps } from "antd";
 import { Avatar, Button, Dropdown } from "antd";
 import { Link, NavLink } from "react-router-dom";
 import logo from "../../assets/images/logo.jpg";
+import { useAppSelector } from "../../redux/hooks";
 
 const Navbar = () => {
+    const { user, isLoading } = useAppSelector((state) => state.user);
+
     const items: MenuProps["items"] = [
         {
             key: "1",
-            label: <Link to="/profile">Profile</Link>,
+            label: (
+                <Link to="/profile">
+                    {user?.name} <span className="bg-white rounded-full px-[7px]">Profile</span>
+                </Link>
+            ),
         },
         {
             key: "4",
@@ -57,26 +64,33 @@ const Navbar = () => {
                             </li>
                         </ul>
                         <div>
-                            <NavLink to="/login" className="mr-2">
-                                <Button type="primary" danger>
-                                    Login
-                                </Button>
-                            </NavLink>
-                            <NavLink to="/register">
-                                <Button type="primary" danger>
-                                    Register
-                                </Button>
-                            </NavLink>
-
-                            <Dropdown menu={{ items }} placement="bottomRight">
-                                <a onClick={(e) => e.preventDefault()}>
-                                    <Avatar
-                                        className="cursor-pointer"
-                                        size="large"
-                                        src="https://source.unsplash.com/100x100/?portrait"
-                                    />
-                                </a>
-                            </Dropdown>
+                            {user?.email ? (
+                                <Dropdown
+                                    menu={{ items }}
+                                    placement="bottomRight"
+                                >
+                                    <a onClick={(e) => e.preventDefault()}>
+                                        <Avatar
+                                            className="cursor-pointer"
+                                            size="large"
+                                            src={user?.photoUrl}
+                                        />
+                                    </a>
+                                </Dropdown>
+                            ) : (
+                                <>
+                                    <NavLink to="/login" className="mr-2">
+                                        <Button type="primary" danger>
+                                            Login
+                                        </Button>
+                                    </NavLink>
+                                    <NavLink to="/register">
+                                        <Button type="primary" danger>
+                                            Register
+                                        </Button>
+                                    </NavLink>
+                                </>
+                            )}
                         </div>
                         <button
                             className="middle none relative ml-auto h-6 max-h-[40px] w-6 max-w-[40px] rounded-lg text-center font-sans text-xs font-medium uppercase text-blue-gray-500 transition-all hover:bg-transparent focus:bg-transparent active:bg-transparent disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:hidden"

@@ -6,6 +6,7 @@ interface IUser {
     user: {
         name: string | null;
         email: string | null;
+        photoUrl: string | null;
     };
     isLoading: boolean;
     isError: boolean;
@@ -21,6 +22,7 @@ const initialState: IUser = {
     user: {
         name: null,
         email: null,
+        photoUrl: null,
     },
     isLoading: false,
     isError: false,
@@ -38,9 +40,39 @@ export const loginUser = createAsyncThunk(
 export const userSlice = createSlice({
     name: "user",
     initialState,
-    reducers: {},
+    reducers: {
+        setUser: (state, action) => {
+            state.user.email = action.payload.email;
+            state.user.name = action.payload.displayName;
+            state.user.photoUrl = action.payload.photoURL;
+        },
+        setLoading: (state, action) => {
+            state.isLoading = action.payload;
+        },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(loginUser.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+                state.isError = false;
+            })
+            .addCase(loginUser.fulfilled, (state, action) => {
+                state.user.email = action.payload.email;
+                state.user.name = action.payload.displayName;
+                state.user.photoUrl = action.payload.photoURL;
+                state.isLoading = false;
+                state.isError = false;
+                state.error = null;
+            })
+            .addCase(loginUser.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.error = action.payload as string;
+            });
+    },
 });
 
-export const {} = userSlice.actions;
+export const { setUser, setLoading } = userSlice.actions;
 
 export default userSlice.reducer;
