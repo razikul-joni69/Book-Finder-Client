@@ -62,14 +62,14 @@ const Navbar = () => {
                         </Link>
                         <ul className="hidden items-center gap-6 lg:flex">
                             <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">
-                                <a className="flex items-center" href="#">
+                                <NavLink to="/" className="flex items-center">
                                     Home
-                                </a>
+                                </NavLink>
                             </li>
                             <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">
-                                <a className="flex items-center" href="#">
+                                <NavLink to="/all-books" className="flex items-center" >
                                     All Books
-                                </a>
+                                </NavLink>
                             </li>
                             {user.role === "author" && (
                                 <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">

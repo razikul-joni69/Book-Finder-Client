@@ -6,6 +6,7 @@ import "./index.css";
 import store from "./redux/store.ts";
 import router from "./routes/router.tsx";
 import "react-toastify/dist/ReactToastify.css";
+import "@smastrom/react-rating/style.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
