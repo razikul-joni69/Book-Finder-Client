@@ -1,11 +1,17 @@
 import { updateProfile } from "firebase/auth";
-import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import Loading from "../../../../Assignment-11/client/src/components/Loading/Loading.jsx";
-import { AuthContext, auth } from "../providers/AuthProvider.jsx";
-import saveUserToDb from "../utils/saveUsertoDb.js";
-import { showErrorMessage, showSuccessMessage } from "../utils/NotifyToast.js";
+import auth from "../configs/firebase.config";
+import { IRegisterUser } from "../globalTypes/globalTypes";
+import { useAppDispatch } from "../redux/hooks";
+import {
+    continueWithFacebook,
+    continueWithGithub,
+    continueWithGoogle,
+    emailPasswordUserCreate,
+} from "../redux/user/userSlice";
+import { showErrorMessage, showSuccessMessage } from "../utils/NotifyToast";
+import saveUserToDb from "../utils/saveUsertoDb";
 
 const Register = () => {
     const location = useLocation();
@@ -17,21 +23,13 @@ const Register = () => {
         formState: { errors },
     } = useForm();
 
-    document.title = "Melody Institute | Register";
+    document.title = "Book Finder | Register";
 
-    const {
-        continueWithGoogle,
-        continueWithGithub,
-        continueWithFacebook,
-        emailPasswordUserCreate,
-        error,
-        setError,
-        loading,
-    } = useContext(AuthContext);
+    const from = location.state?.from?.pathname || "/";
 
-    const from = location.state?.from?.pathname || "/home";
+    const dispatch = useAppDispatch();
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: IRegisterUser) => {
         const imageUploadToken = import.meta.env.VITE_Image_Upload_Token;
         const imageHostingUrl = `https://api.imgbb.com/1/upload?key=${imageUploadToken}`;
         const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{7,}$/;
@@ -39,32 +37,31 @@ const Register = () => {
         const formData = new FormData();
         formData.append("image", data.photoURL[0]);
 
-        const userData = {
-            address: data?.address,
-            email: data?.email,
-            gender: data?.gender,
+        const userData: IRegisterUser = {
             name: data?.name,
+            email: data?.email,
+            role: data?.role,
+            address: data?.address,
+            gender: data?.gender,
             password: data?.password,
             phone: data?.phone,
-            role: data?.role,
         };
 
         if (data.password !== data.confirm) {
             showErrorMessage("Password doesn't match confirm password!");
-            return setError("Password doesn't match confirm password");
+            // return setError("Password doesn't match confirm password");
         } else if (data.password.length < 6) {
             showErrorMessage("Password must be at least 6 characters");
-            return setError("Password must be at least 6 characters");
+            // return setError("Password must be at least 6 characters");
         } else if (regex.test(data.password) === false) {
             showErrorMessage(
                 "Password doesn't meet requirements. Password must have 6 or more character at least one Uppercase Letter and one Special character."
             );
-            return setError(
-                "Password doesn't meet requirements. Password must have 6 or more character at least one Uppercase Letter and one Special character."
-            );
+            // return setError(
+            //     "Password doesn't meet requirements. Password must have 6 or more character at least one Uppercase Letter and one Special character."
+            // );
         } else {
             try {
-                setError("");
                 await fetch(imageHostingUrl, {
                     method: "POST",
                     body: formData,
@@ -72,31 +69,44 @@ const Register = () => {
                     .then((res) => res.json())
                     .then((img) => {
                         if (img.status === 200) {
-                            userData.photoURL = img?.data?.display_url;
+                            userData.img = img?.data?.display_url;
+                            console.log(img?.data?.display_url);
+                            console.log(userData);
 
-                            emailPasswordUserCreate(
-                                userData.email,
-                                userData.password
+                            const email = userData?.email;
+                            const password = userData?.password;
+                            dispatch(
+                                emailPasswordUserCreate({ email, password })
                             )
                                 .then((res) => {
-                                    updateProfile(auth.currentUser, {
-                                        displayName: userData?.name,
-                                        photoURL: userData.photoURL,
-                                    })
-                                        .then(() => {
-                                            saveUserToDb(
-                                                res?.user?.displayName,
-                                                res?.user.email,
-                                                res?.user.photoURL,
-                                                userData
-                                            );
+                                    if (
+                                        res?.type ===
+                                        "user/emailPasswordUserCreate/rejected"
+                                    ) {
+                                        throw new Error(res?.error?.message);
+                                    }
+                                    if (
+                                        res?.type ===
+                                        "user/emailPasswordUserCreate/fulfilled"
+                                    ) {
+                                        updateProfile(auth.currentUser!, {
+                                            displayName: userData?.name,
+                                            photoURL: userData.img,
                                         })
-                                        .catch((err) => {
-                                            setError(`📈 ${err.message}`);
-                                            showErrorMessage(
-                                                "🚫 User Profile not updated!"
-                                            );
-                                        });
+                                            .then(() => {
+                                                saveUserToDb(
+                                                    res?.payload?.displayName,
+                                                    res?.payload?.email,
+                                                    res?.payload?.photoURL,
+                                                    userData
+                                                );
+                                            })
+                                            .catch((err) => {
+                                                showErrorMessage(
+                                                    "🚫 User Profile not updated!"
+                                                );
+                                            });
+                                    }
                                     showSuccessMessage(
                                         "👍 User Registered Successfully!"
                                     );
@@ -104,75 +114,81 @@ const Register = () => {
                                     navigate(from);
                                 })
                                 .catch((err) => {
-                                    setError(err.message);
                                     showErrorMessage(err.message);
                                 });
                         }
                     });
             } catch (err) {
-                setError(err.message);
                 showErrorMessage(err.message);
             }
         }
     };
 
     const handleGoogleLogin = () => {
-        continueWithGoogle()
+        dispatch(continueWithGoogle())
             .then((res) => {
-                saveUserToDb(
-                    res?.user?.displayName,
-                    res?.user.email,
-                    res?.user.photoURL
-                );
-                setError("");
-                showSuccessMessage("👍 Google SignIn Successfully!");
-                navigate(from, { replace: true });
+                if (res?.type === "user/continueWithGoogle/rejected") {
+                    showErrorMessage(res?.error?.message);
+                } else if (res?.type === "user/continueWithGoogle/fulfilled") {
+                    saveUserToDb(
+                        res?.payload?.displayName,
+                        res?.payload?.email,
+                        res?.payload?.photoURL
+                    );
+                    showSuccessMessage("👍 Google SignIn Successful!");
+                    navigate(from, { replace: true });
+                }
             })
             .catch((err) => {
-                setError(err.message);
                 showErrorMessage(err.message);
             });
     };
 
     const handleGithubLogin = () => {
-        continueWithGithub()
+        dispatch(continueWithGithub())
             .then((res) => {
-                saveUserToDb(
-                    res?.user?.displayName,
-                    res?.user.email,
-                    res?.user.photoURL
-                );
-                setError("");
-                showSuccessMessage("👍 Github Register Successfully!");
-                navigate(from, { replace: true });
+                if (res?.type === "user/continueWithGithub/rejected") {
+                    showErrorMessage(res?.error?.message);
+                } else if (res?.type === "user/continueWithGithub/fullfilled") {
+                    saveUserToDb(
+                        res?.payload?.displayName,
+                        res?.payload?.email,
+                        res?.payload?.photoURL
+                    );
+                    showSuccessMessage("👍 Github SignIn Successfully!");
+                    navigate(from, { replace: true });
+                }
             })
             .catch((err) => {
-                setError(err.message);
                 showErrorMessage(err.message);
             });
     };
 
     const handleFacebookLogin = () => {
-        continueWithFacebook()
-            .then((res) => {
-                saveUserToDb(
-                    res?.user?.displayName,
-                    res?.user.email,
-                    res?.user.photoURL
-                );
-                setError("");
-                showSuccessMessage("👍 Facebook Register Successfully!");
-                navigate(from, { replace: true });
+        dispatch(continueWithFacebook())
+            .then((res: any) => {
+                if (res?.type === "user/continueWithFacebook/rejected") {
+                    showErrorMessage(res?.error?.message);
+                } else if (
+                    res?.type === "user/continueWithFacebook/fulfilled"
+                ) {
+                    saveUserToDb(
+                        res?.payload?.displayName,
+                        res?.payload?.email,
+                        res?.payload?.photoURL
+                    );
+                    showSuccessMessage("👍 Facebook SignIn Successfully!");
+                    navigate(from, { replace: true });
+                }
             })
-            .catch((err) => {
-                setError(err.message);
+            .catch((err: any) => {
                 showErrorMessage(err.message);
             });
     };
 
-    if (loading) {
-        return <Loading />;
-    }
+    // if (loading) {
+    //     return <Loading />;
+    // }
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-[#1d232a] flex flex-col justify-center sm:py-12">
@@ -251,8 +267,8 @@ const Register = () => {
                             className="w-full px-3 py-2 mt-1 mb-5 text-sm border rounded-lg dark:text-white dark:bg-slate-700"
                             {...register("role", { required: true })}
                         >
-                            <option value="student">Student</option>
-                            <option value="instructor">Instructor</option>
+                            <option value="user">User</option>
+                            <option value="author">Author</option>
                         </select>
                         {errors.role && (
                             <span className="block mb-2 text-error">
@@ -283,11 +299,11 @@ const Register = () => {
                                 This field is required. Please Upload your photo
                             </span>
                         )}
-                        {error && (
+                        {/* {error && (
                             <p className="mb-5 text-sm text-red-700 ">
                                 {error}
                             </p>
-                        )}
+                        )} */}
                         <button
                             type="submit"
                             className="transition duration-200 bg-blue-500 hover:bg-blue-600 focus:bg-blue-700 focus:shadow-sm focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block"
@@ -331,7 +347,7 @@ const Register = () => {
                     <div className="p-5">
                         <div className="grid grid-cols-3 gap-1">
                             <button
-                                onClick={handleFacebookLogin}
+                                // onClick={handleFacebookLogin}
                                 type="button"
                                 className="transition duration-200 border dark:text-white border-gray-200 text-gray-500 w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-normal text-center inline-block"
                             >

@@ -1,18 +1,24 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
+    FacebookAuthProvider,
+    GithubAuthProvider,
     GoogleAuthProvider,
+    createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signInWithPopup,
 } from "firebase/auth";
 import auth from "../../configs/firebase.config";
 
 const googleProvider = new GoogleAuthProvider();
+const githubProvider = new GithubAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 
 interface IUser {
     user: {
         name: string | null;
         email: string | null;
-        photoUrl: string | null;
+        img: string | null;
+        role: string | null;
     };
     isLoading: boolean;
     isError: boolean;
@@ -28,12 +34,25 @@ const initialState: IUser = {
     user: {
         name: null,
         email: null,
-        photoUrl: null,
+        img: null,
+        role: null
     },
     isLoading: false,
     isError: false,
     error: null,
 };
+
+export const emailPasswordUserCreate = createAsyncThunk(
+    "user/emailPasswordUserCreate",
+    async ({ email, password }: IUserCredentials) => {
+        const data = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+        return data.user;
+    }
+);
 
 export const loginUser = createAsyncThunk(
     "user/login",
@@ -51,6 +70,22 @@ export const continueWithGoogle = createAsyncThunk(
     }
 );
 
+export const continueWithGithub = createAsyncThunk(
+    "user/continueWithGithub",
+    async () => {
+        const data = await signInWithPopup(auth, githubProvider);
+        return data.user;
+    }
+);
+
+export const continueWithFacebook = createAsyncThunk(
+    "user/continueWithFacebook",
+    async () => {
+        const data = await signInWithPopup(auth, facebookProvider);
+        return data.user;
+    }
+);
+
 export const userSlice = createSlice({
     name: "user",
     initialState,
@@ -59,11 +94,13 @@ export const userSlice = createSlice({
             if (action.payload === null) {
                 state.user.email = action.payload;
                 state.user.name = action.payload;
-                state.user.photoUrl = action.payload;
+                state.user.img = action.payload;
+                state.user.role = action.payload;
             } else {
                 state.user.email = action.payload.email;
-                state.user.name = action.payload.displayName;
-                state.user.photoUrl = action.payload.photoURL;
+                state.user.name = action.payload.name;
+                state.user.img = action.payload.img;
+                state.user.role = action.payload.role;
             }
         },
         setLoading: (state, action) => {
@@ -80,7 +117,7 @@ export const userSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.user.email = action.payload.email;
                 state.user.name = action.payload.displayName;
-                state.user.photoUrl = action.payload.photoURL;
+                state.user.img = action.payload.photoURL;
                 state.isLoading = false;
                 state.isError = false;
                 state.error = null;

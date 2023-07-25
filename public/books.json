@@ -1,0 +1,104 @@
+[
+    {
+        "_id": { "$oid": "64bf6b75fbb22316f0697b9b" },
+        "book_name": "Book1",
+        "genre": "Fiction",
+        "img": "https://i.ibb.co/K9hxhP3/IMG20191127141623.jpg",
+        "description": "This is a captivating fiction book that will keep you hooked.",
+        "author_name": "John Doe",
+        "author_email": "john.doe@example.com",
+        "author_img": "https://i.ibb.co/R2Rj3M2/IMG20191127141623.jpg",
+        "reviews": ["Fantastic book!", "Highly recommended."],
+        "publish_date": "Jul 25, 2023"
+    },
+    {
+        "_id": { "$oid": "64bf6b75fbb22316f0697b9c" },
+        "book_name": "Book2",
+        "genre": "Mystery",
+        "img": "https://i.ibb.co/K9hxhP3/IMG20191127141623.jpg",
+        "description": "Unravel the mystery in this gripping book.",
+        "author_name": "Jane Smith",
+        "author_email": "jane.smith@example.com",
+        "author_img": "https://i.ibb.co/R2Rj3M2/IMG20191127141623.jpg",
+        "reviews": ["Couldn't put it down!", "Twists and turns galore."],
+        "publish_date": "Jul 25, 2023"
+    },
+    {
+        "_id": { "$oid": "64bf6b75fbb22316f0697b9d" },
+        "book_name": "Book3",
+        "genre": "Science Fiction",
+        "img": "https://i.ibb.co/K9hxhP3/IMG20191127141623.jpg",
+        "description": "A mind-bending journey through the cosmos.",
+        "author_name": "Alex Johnson",
+        "author_email": "alex.johnson@example.com",
+        "author_img": "https://i.ibb.co/R2Rj3M2/IMG20191127141623.jpg",
+        "reviews": ["Out of this world!", "Science and imagination collide."],
+        "publish_date": "Jul 25, 2023"
+    },
+    {
+        "_id": { "$oid": "64bf6b75fbb22316f0697b9e" },
+        "book_name": "Book4",
+        "genre": "Romance",
+        "img": "https://i.ibb.co/K9hxhP3/IMG20191127141623.jpg",
+        "description": "Experience love and passion in this heartwarming tale.",
+        "author_name": "Emily Brown",
+        "author_email": "emily.brown@example.com",
+        "author_img": "https://i.ibb.co/R2Rj3M2/IMG20191127141623.jpg",
+        "reviews": ["A beautiful love story!", "Touches the heart."],
+        "publish_date": "Jul 25, 2023"
+    },
+    {
+        "_id": { "$oid": "64bf6b75fbb22316f0697b9f" },
+        "book_name": "Book5",
+        "genre": "Thriller",
+        "img": "https://i.ibb.co/K9hxhP3/IMG20191127141623.jpg",
+        "description": "Get ready for an adrenaline-pumping ride.",
+        "author_name": "Michael Smith",
+        "author_email": "michael.smith@example.com",
+        "author_img": "https://i.ibb.co/R2Rj3M2/IMG20191127141623.jpg",
+        "reviews": [
+            "Keeps you on the edge of your seat!",
+            "Brilliantly suspenseful."
+        ],
+        "publish_date": "Jul 25, 2023"
+    },
+    {
+        "_id": { "$oid": "64bf6b75fbb22316f0697ba0" },
+        "book_name": "Book6",
+        "genre": "Fantasy",
+        "img": "https://i.ibb.co/K9hxhP3/IMG20191127141623.jpg",
+        "description": "Embark on a magical adventure in a mystical land.",
+        "author_name": "Sarah Williams",
+        "author_email": "sarah.williams@example.com",
+        "author_img": "https://i.ibb.co/R2Rj3M2/IMG20191127141623.jpg",
+        "reviews": [
+            "Enchanting and imaginative!",
+            "A must-read for fantasy lovers."
+        ],
+        "publish_date": "Jul 25, 2023"
+    },
+    {
+        "_id": { "$oid": "64bf6b75fbb22316f0697ba1" },
+        "book_name": "Book7",
+        "genre": "Non-Fiction",
+        "img": "https://i.ibb.co/K9hxhP3/IMG20191127141623.jpg",
+        "description": "Discover real-life stories that inspire and educate.",
+        "author_name": "David Johnson",
+        "author_email": "david.johnson@example.com",
+        "author_img": "https://i.ibb.co/R2Rj3M2/IMG20191127141623.jpg",
+        "reviews": ["Eye-opening and thought-provoking!", "Inspiring read."],
+        "publish_date": "Jul 25, 2023"
+    },
+    {
+        "_id": { "$oid": "64bf6b75fbb22316f0697ba2" },
+        "book_name": "Book8",
+        "genre": "Horror",
+        "img": "https://i.ibb.co/K9hxhP3/IMG20191127141623.jpg",
+        "description": "Prepare to be scared in this spine-chilling horror book.",
+        "author_name": "Jessica Lee",
+        "author_email": "jessica.lee@example.com",
+        "author_img": "https://i.ibb.co/R2Rj3M2/IMG20191127141623.jpg",
+        "reviews": ["Terrifying!", "Hauntingly good."],
+        "publish_date": "Jul 25, 2023"
+    }
+]

@@ -1,7 +1,13 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../redux/hooks";
-import { continueWithGoogle, loginUser } from "../redux/user/userSlice";
+import {
+    continueWithFacebook,
+    continueWithGithub,
+    continueWithGoogle,
+    loginUser,
+} from "../redux/user/userSlice";
 import { showErrorMessage, showSuccessMessage } from "../utils/NotifyToast";
+import saveUserToDb from "../utils/saveUsertoDb";
 
 const Login = () => {
     const location = useLocation();
@@ -12,18 +18,16 @@ const Login = () => {
 
     const from = location.state?.from?.pathname || "/";
 
-    const handleUserLogin = (e) => {
+    const handleUserLogin = (e: Event) => {
         e.preventDefault();
 
         const email = e.target.email.value;
         const password = e.target.password.value;
 
-        const emailPasswordUserLogin = dispatch(loginUser({ email, password }));
-
         if (password.length < 6) {
             showErrorMessage("Password must be at least 6 characters");
         } else {
-            emailPasswordUserLogin
+            dispatch(loginUser({ email, password }))
                 .then((res) => {
                     if (res?.type === "user/login/fulfilled") {
                         showSuccessMessage("👍 Email SignIn Successful!");
@@ -41,58 +45,64 @@ const Login = () => {
     const handleGoogleLogin = () => {
         dispatch(continueWithGoogle())
             .then((res) => {
-                console.log(res);
-                
-                // saveUserToDb(
-                //     res?.user?.displayName,
-                //     res?.user.email,
-                //     res?.user.photoURL
-                // );
-                // setError("");
-                showSuccessMessage("👍 Google SignIn Successful!");
-                navigate(from, { replace: true });
+                if (res?.type === "user/continueWithGoogle/rejected") {
+                    showErrorMessage(res?.error?.message);
+                } else if (res?.type === "user/continueWithGoogle/fulfilled") {
+                    saveUserToDb(
+                        res?.payload?.displayName,
+                        res?.payload?.email,
+                        res?.payload?.photoURL
+                    );
+                    showSuccessMessage("👍 Google SignIn Successful!");
+                    navigate(from, { replace: true });
+                }
             })
             .catch((err) => {
-                // setError(err.message);
                 showErrorMessage(err.message);
             });
     };
 
-    // const handleGithubLogin = () => {
-    //     continueWithGithub()
-    //         .then((res) => {
-    //             saveUserToDb(
-    //                 res?.user?.displayName,
-    //                 res?.user.email,
-    //                 res?.user.photoURL
-    //             );
-    //             setError("");
-    //             showSuccessMessage("👍 Github SignIn Successfully!");
-    //             navigate(from, { replace: true });
-    //         })
-    //         .catch((err) => {
-    //             setError(err.message);
-    //             showErrorMessage(err.message);
-    //         });
-    // };
+    const handleGithubLogin = () => {
+        dispatch(continueWithGithub())
+            .then((res) => {
+                if (res?.type === "user/continueWithGithub/rejected") {
+                    showErrorMessage(res?.error?.message);
+                } else if (res?.type === "user/continueWithGithub/fullfilled") {
+                    saveUserToDb(
+                        res?.payload?.displayName,
+                        res?.payload?.email,
+                        res?.payload?.photoURL
+                    );
+                    showSuccessMessage("👍 Github SignIn Successfully!");
+                    navigate(from, { replace: true });
+                }
+            })
+            .catch((err) => {
+                showErrorMessage(err.message);
+            });
+    };
 
-    // const handleFacebookLogin = () => {
-    //     continueWithFacebook()
-    //         .then((res) => {
-    //             saveUserToDb(
-    //                 res?.user?.displayName,
-    //                 res?.user.email,
-    //                 res?.user.photoURL
-    //             );
-    //             setError("");
-    //             showSuccessMessage("👍 Facebook SignIn Successfully!");
-    //             navigate(from, { replace: true });
-    //         })
-    //         .catch((err) => {
-    //             setError(err.message);
-    //             showErrorMessage(err.message);
-    //         });
-    // };
+    const handleFacebookLogin = () => {
+        dispatch(continueWithFacebook())
+            .then((res: any) => {
+                if (res?.type === "user/continueWithFacebook/rejected") {
+                    showErrorMessage(res?.error?.message);
+                } else if (
+                    res?.type === "user/continueWithFacebook/fulfilled"
+                ) {
+                    saveUserToDb(
+                        res?.payload?.displayName,
+                        res?.payload?.email,
+                        res?.payload?.photoURL
+                    );
+                    showSuccessMessage("👍 Facebook SignIn Successfully!");
+                    navigate(from, { replace: true });
+                }
+            })
+            .catch((err: any) => {
+                showErrorMessage(err.message);
+            });
+    };
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-[#1d232a]  flex flex-col justify-center sm:py-12">
@@ -184,7 +194,7 @@ const Login = () => {
                                 Google
                             </button>
                             <button
-                                // onClick={handleGithubLogin}
+                                onClick={handleGithubLogin}
                                 type="button"
                                 className="transition duration-200 border border-gray-200 dark:text-white text-gray-500 w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-normal text-center inline-block"
                             >

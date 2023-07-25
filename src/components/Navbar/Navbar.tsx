@@ -10,6 +10,7 @@ import { showErrorMessage, showSuccessMessage } from "../../utils/NotifyToast";
 
 const Navbar = () => {
     const { user, isLoading } = useAppSelector((state) => state.user);
+    
     const dispatch = useAppDispatch();
 
     const items: MenuProps["items"] = [
@@ -28,15 +29,10 @@ const Navbar = () => {
             onClick: () => {
                 signOut(auth)
                     .then(() => {
-                        console.log("log 01");
-
                         dispatch(setUser(null));
-                        console.log("log 02");
                         showSuccessMessage("SignOut Successful! 🆗");
-                        console.log("log 03");
                     })
                     .catch((err) => {
-                        console.log("log 04");
                         showErrorMessage(err.message);
                     });
             },
@@ -75,11 +71,16 @@ const Navbar = () => {
                                     All Books
                                 </a>
                             </li>
-                            <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">
-                                <a className="flex items-center" href="#">
-                                    Blocks
-                                </a>
-                            </li>
+                            {user.role === "author" && (
+                                <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">
+                                    <NavLink
+                                        to="add-books"
+                                        className="flex items-center"
+                                    >
+                                        Add Books
+                                    </NavLink>
+                                </li>
+                            )}
                             <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">
                                 <a className="flex items-center" href="#">
                                     Docs
@@ -96,7 +97,7 @@ const Navbar = () => {
                                         <Avatar
                                             className="cursor-pointer"
                                             size="large"
-                                            src={user?.photoUrl}
+                                            src={user?.img}
                                         />
                                     </a>
                                 </Dropdown>
