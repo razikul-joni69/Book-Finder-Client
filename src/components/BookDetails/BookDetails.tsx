@@ -1,9 +1,11 @@
 import { Rating } from "@smastrom/react-rating";
+import { Avatar } from "antd";
 import { BsFillSendCheckFill } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
     useGetBookByIdQuery,
+    useGetReviewsQuery,
     usePostReviewMutation,
 } from "../../redux/api/apiSlice";
 import { useAppSelector } from "../../redux/hooks";
@@ -18,6 +20,8 @@ const BookDetails = () => {
     const { data, isLoading } = useGetBookByIdQuery(id);
     const { user } = useAppSelector((state) => state.user);
     const [postReview, { isError, isSuccess, error }] = usePostReviewMutation();
+    const { data: reviews } = useGetReviewsQuery(id);
+    console.log(reviews);
 
     let book = {};
     if (data) {
@@ -108,6 +112,12 @@ const BookDetails = () => {
                             <h1 className="text-gray-900 dark:text-white text-3xl title-font font-medium mb-1">
                                 {book?.book_name}
                             </h1>
+                            <div className="dark:text-white">
+                                Genre: {book?.genre}
+                            </div>
+                            <div className="dark:text-white">
+                                Published At: {book?.publish_date}
+                            </div>
                             <div className="flex mb-4">
                                 <span className="flex items-center">
                                     <Rating
@@ -116,7 +126,7 @@ const BookDetails = () => {
                                         readOnly
                                     />
                                     <span className="text-gray-600 dark:text-white ml-3">
-                                        {book?.reviews.length} Reviews
+                                        {book?.reviews?.length} Reviews
                                     </span>
                                 </span>
                                 <span className="flex ml-3 pl-3 py-2 border-l-2 border-gray-200 space-x-2s">
@@ -205,6 +215,21 @@ const BookDetails = () => {
                         <BsFillSendCheckFill />
                     </button>
                 </form>
+            </div>
+            <div className="w-1/2 dark:text-white flex justify-center">
+                <ul className=" space-y-5">
+                    {reviews?.reviews?.map((review) => (
+                        <li className="space-x-3">
+                            <Avatar
+                                size={40}
+                                src="https://source.unsplash.com/100x100/?portrait"
+                            >
+                                USER
+                            </Avatar>
+                            <span>{review}</span>
+                        </li>
+                    ))}
+                </ul>
             </div>
         </div>
     );
