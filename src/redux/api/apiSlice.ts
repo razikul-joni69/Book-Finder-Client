@@ -7,7 +7,17 @@ export const api = createApi({
         getBooks: builder.query({
             query: () => `/api/v1/books`,
         }),
+        getBookById: builder.query({
+            query: (id) => `/api/v1/book/${id}`,
+        }),
+        postReview: builder.mutation({
+            query: ({id, review}) => ({
+                url: `/api/v1/comment/${id}`,
+                method: "POST",
+                body: review,
+            }),
+        })
     }),
 });
 
-export const { useGetBooksQuery } = api;
+export const { useGetBooksQuery, useGetBookByIdQuery, usePostReviewMutation } = api;

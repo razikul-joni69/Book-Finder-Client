@@ -26,14 +26,15 @@ const Layout = () => {
                     })
                     .catch((err) => {
                         showErrorMessage(err.message);
-                    }).finally(() => {
-                        dispatch(setLoading(false));
                     })
+                    .finally(() => {
+                        dispatch(setLoading(false));
+                    });
+            } 
+            else {
+                dispatch(setUser(null));
+                dispatch(setLoading(false));
             }
-
-            // } else {
-            //     dispatch(setLoading(false));
-            // }
         });
     }, [dispatch]);
 

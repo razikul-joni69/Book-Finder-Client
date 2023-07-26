@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Rating } from "@smastrom/react-rating";
 import { Button } from "antd";
+import { Link } from "react-router-dom";
 // import axios from "axios";
 // import { useContext } from "react";
 // import { useNavigate } from "react-router-dom";
@@ -152,14 +153,10 @@ const BooksCard = (data: []) => {
                             </div>
                             <div className={`flex-1 min-w-0`}>
                                 <p
-                                    className={`text-md font-bold ${
-                                        book?.available_seats > 0
-                                            ? "text-gray-900"
-                                            : "text-white"
-                                    }  truncate dark:text-white`}
+                                    className={`text-md font-bold  truncate dark:text-white`}
                                 >
                                     {book.author_name}{" "}
-                                    <span className="badge dark:badge-accent dark:text-white ">
+                                    <span className="p-3 bg-white dark:bg-black rounded-full text-black dark:text-white ">
                                         Author
                                     </span>
                                 </p>
@@ -172,13 +169,13 @@ const BooksCard = (data: []) => {
                         </div>
                         <hr className="my-4" />
                         <div className="relative">
-                            <a className="relative" href="#">
+                            <Link to={`/book/${book._id}`} className="relative">
                                 <img
                                     className="w-full rounded-t-lg h-60"
                                     src={book?.img}
                                     alt="product image"
                                 />
-                            </a>
+                            </Link>
                         </div>
                         <hr className="my-4" />
                         <div className="space-y-2">
