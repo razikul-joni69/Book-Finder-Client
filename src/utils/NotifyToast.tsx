@@ -38,3 +38,16 @@ export const showInfoMessage = (message: string) => {
         theme: "colored",
     });
 };
+
+export const showWarning = (message: string) => {
+    toast.warning(message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+    });
+};

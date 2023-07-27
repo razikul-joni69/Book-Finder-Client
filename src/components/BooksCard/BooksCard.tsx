@@ -2,6 +2,13 @@
 import { Rating } from "@smastrom/react-rating";
 import { Button } from "antd";
 import { Link } from "react-router-dom";
+import { useAddToWishlistMutation } from "../../redux/api/apiSlice";
+import { useAppSelector } from "../../redux/hooks";
+import {
+    showErrorMessage,
+    showSuccessMessage,
+    showWarning,
+} from "../../utils/NotifyToast";
 // import axios from "axios";
 // import { useContext } from "react";
 // import { useNavigate } from "react-router-dom";
@@ -11,129 +18,34 @@ import { Link } from "react-router-dom";
 // import Loading from "../Loading/Loading";
 
 const BooksCard = (data: []) => {
-    console.log(data);
+    const { user } = useAppSelector((state) => state.user);
 
-    // const { user, loading } = useContext(AuthContext);
-    // const navigate = useNavigate();
-    // const [dbCurrentUser, dbCurrentUserLoading] = useGetCurrentUser();
+    const [
+        addToWishlist,
+        {
+            isError: isWishlistError,
+            isSuccess: isWishlistSuccess,
+            error: wishlistError,
+            data: response,
+        },
+    ] = useAddToWishlistMutation();
 
-    // if (loading || dbCurrentUserLoading) {
-    //     return <Loading />;
-    // }
+    if (response?.statusCode === 200) {
+        showSuccessMessage(response?.message);
+    } else if (response?.statusCode === 409) {
+        showWarning(response?.message);
+    } else if (isWishlistError) {
+        showErrorMessage(wishlistError?.message);
+    }
 
-    // const handleSaveToCart = async (book) => {
-    //     if (!user) {
-    //         Swal.fire({
-    //             title: "Are you sure You Want To Login?",
-    //             text: "You have to login/ register for add to cart.",
-    //             icon: "warning",
-    //             showCancelButton: true,
-    //             confirmButtonColor: "#3085d6",
-    //             cancelButtonColor: "#d33",
-    //             confirmButtonText: "Yes, Login!",
-    //         }).then((result) => {
-    //             if (result.isConfirmed) {
-    //                 navigate("/login");
-    //                 Swal.fire({
-    //                     position: "top-end",
-    //                     icon: "success",
-    //                     title: "Navigated to Login!",
-    //                     showConfirmButton: false,
-    //                     timer: 1500,
-    //                 });
-    //             }
-    //         });
-    //     } else {
-    //         if (!(dbCurrentUser?.role === "student")) {
-    //             Swal.fire({
-    //                 title: "You can not Enroll!",
-    //                 text: "Only Student can Enroll Classes!",
-    //                 icon: "warning",
-    //             });
-    //         } else if (user && dbCurrentUser?.role === "student") {
-    //             const cartData = {
-    //                 student_email: user?.email,
-    //                 selected_classes: [book],
-    //                 enrolled_classes: [],
-    //             };
-    //             await axios
-    //                 .get(
-    //                     `https://melody-institute-server.vercel.app/api/v1/cart/${user?.email}`
-    //                 )
-    //                 .then((res) => {
-    //                     if (res?.data?.length) {
-    //                         const oldClasses = res?.data[0]?.selected_classes;
-    //                         const oldClasses2 = res?.data[0]?.enrolled_classes;
-    //                         const updateCartData = {
-    //                             classes: [...oldClasses, book],
-    //                         };
-    //                         const exist = oldClasses.find(
-    //                             (oldbook) => oldbook._id === book._id
-    //                         );
-    //                         const exist2 = oldClasses2.find(
-    //                             (oldbook) => oldbook._id === book._id
-    //                         );
-    //                         if (!exist && !exist2) {
-    //                             axios
-    //                                 .patch(
-    //                                     `https://melody-institute-server.vercel.app/api/v1/cart/${user?.email}?class_type=selected`,
-    //                                     updateCartData
-    //                                 )
-    //                                 .then((res) => {
-    //                                     if (
-    //                                         res?.data?.lastErrorObject
-    //                                             ?.updatedExisting
-    //                                     ) {
-    //                                         showSuccessMessage(
-    //                                             "👍 Class Added to cart!"
-    //                                         );
-    //                                         refetch();
-    //                                     }
-    //                                 })
-    //                                 .catch((err) => {
-    //                                     showErrorMessage(err.message);
-    //                                 });
-    //                         } else {
-    //                             if (exist) {
-    //                                 showErrorMessage(
-    //                                     "Class already added to your cart!"
-    //                                 );
-    //                             }
-    //                             if (exist2) {
-    //                                 showErrorMessage(
-    //                                     "You already enrolled to this class!"
-    //                                 );
-    //                             }
-    //                         }
-    //                     } else {
-    //                         axios
-    //                             .post(
-    //                                 `https://melody-institute-server.vercel.app/api/v1/cart/`,
-    //                                 cartData
-    //                             )
-    //                             .then((res) => {
-    //                                 if (res?.data?.insertedId) {
-    //                                     showSuccessMessage(
-    //                                         "👍 Class Added to cart!"
-    //                                     );
-    //                                     refetch();
-    //                                 }
-    //                             })
-    //                             .catch((err) => {
-    //                                 showErrorMessage(err.message);
-    //                             });
-    //                     }
-    //                 })
-    //                 .catch((err) => {
-    //                     showErrorMessage(err.message);
-    //                 });
-    //         }
-    //     }
-    // };
-
-    // if (dbAllClassesLoading) {
-    //     return <Loading />;
-    // }
+    const handleCart = (book: object, cart: string) => {
+        const options = {
+            email: user?.email,
+            book: { book },
+            cart,
+        };
+        addToWishlist(options);
+    };
 
     return (
         <div className="my-10">
@@ -209,10 +121,20 @@ const BooksCard = (data: []) => {
                                         ? "Add to Cart"
                                         : "Class Booked"}
                                 </button> */}
-                                <Button type="primary" className="bg-blue-500">
+                                <Button
+                                    onClick={() =>
+                                        handleCart(book, "readinglist")
+                                    }
+                                    type="primary"
+                                    className="bg-blue-500"
+                                >
                                     Add To Reading List
                                 </Button>
-                                <Button type="primary" className="bg-blue-500">
+                                <Button
+                                    onClick={() => handleCart(book, "wishlist")}
+                                    type="primary"
+                                    className="bg-blue-500"
+                                >
                                     Add To WishList
                                 </Button>
                             </div>

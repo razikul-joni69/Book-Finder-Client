@@ -4,12 +4,17 @@ import { BsFillSendCheckFill } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
+    useAddToWishlistMutation,
     useGetBookByIdQuery,
     useGetReviewsQuery,
     usePostReviewMutation,
 } from "../../redux/api/apiSlice";
 import { useAppSelector } from "../../redux/hooks";
-import { showErrorMessage, showSuccessMessage } from "../../utils/NotifyToast";
+import {
+    showErrorMessage,
+    showSuccessMessage,
+    showWarning,
+} from "../../utils/NotifyToast";
 import Loading from "../Loading/Loading";
 import Titles from "../Titles/Titles";
 
@@ -19,9 +24,18 @@ const BookDetails = () => {
 
     const { data, isLoading } = useGetBookByIdQuery(id);
     const { user } = useAppSelector((state) => state.user);
-    const [postReview, { isError, isSuccess, error }] = usePostReviewMutation();
-    const { data: reviews } = useGetReviewsQuery(id);
-    console.log(reviews);
+    const [postReview, { isError, isSuccess, error, data: commentResponse }] = usePostReviewMutation();
+    const [
+        addToWishlist,
+        {
+            isError: isWishlistError,
+            isSuccess: isWishlistSuccess,
+            error: wishlistError,
+            data: response,
+        },
+    ] = useAddToWishlistMutation();
+    const { data: reviews, } = useGetReviewsQuery(id);
+    
 
     let book = {};
     if (data) {
@@ -31,35 +45,50 @@ const BookDetails = () => {
     if (isError) {
         showErrorMessage(error?.message);
     }
-    if (isSuccess) {
-        showSuccessMessage("Review Submitted!");
+
+    if (commentResponse?.statusCode === 200) {
+        showSuccessMessage(commentResponse?.message);
+    }
+        const handleCommentSubmit = (e) => {
+            e.preventDefault();
+            if (!user?.email) {
+                Swal.fire({
+                    title: "Are you sure you want to login?",
+                    text: "You have to login or register to leave a comment.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, Login!",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        navigate("/login");
+                    }
+                });
+            } else {
+                const comment = e.target.comment.value;
+                const options = {
+                    id,
+                    review: { comment },
+                };
+                postReview(options);
+                e.target.reset();
+            }
+        };
+
+    if (response?.statusCode === 200) {
+        showSuccessMessage(response?.message);
+    } else if (response?.statusCode === 409) {
+        showWarning(response?.message);
     }
 
-    const handleCommentSubmit = (e) => {
-        e.preventDefault();
-        if (!user?.email) {
-            Swal.fire({
-                title: "Are you sure you want to login?",
-                text: "You have to login or register to leave a comment.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, Login!",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    navigate("/login");
-                }
-            });
-        } else {
-            const comment = e.target.comment.value;
-            const options = {
-                id,
-                review: { comment },
-            };
-            postReview(options);
-            e.target.reset();
-        }
+    const handleCart = (book: object, cart: string) => {
+        const options = {
+            email: user?.email,
+            book: { book },
+            cart,
+        };
+        addToWishlist(options);
     };
 
     if (isLoading) {
@@ -67,7 +96,7 @@ const BookDetails = () => {
     }
 
     return (
-        <div className="dark:bg-slate-800 py-10">
+        <div key={book?._id} className="dark:bg-slate-800 py-10">
             <Titles
                 title={`${book?.book_name} Book Details`}
                 subTitle="All About your chossen book."
@@ -133,9 +162,9 @@ const BookDetails = () => {
                                     <a className="text-gray-500 dark:text-white">
                                         <svg
                                             fill="currentColor"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
                                             className="w-5 h-5"
                                             viewBox="0 0 24 24"
                                         >
@@ -145,9 +174,9 @@ const BookDetails = () => {
                                     <a className="text-gray-500 dark:text-white">
                                         <svg
                                             fill="currentColor"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
                                             className="w-5 h-5"
                                             viewBox="0 0 24 24"
                                         >
@@ -157,9 +186,9 @@ const BookDetails = () => {
                                     <a className="text-gray-500 dark:text-white">
                                         <svg
                                             fill="currentColor"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
                                             className="w-5 h-5"
                                             viewBox="0 0 24 24"
                                         >
@@ -173,10 +202,18 @@ const BookDetails = () => {
                             </p>
                             <div className=" pb-5 border-b-2 border-gray-100 mb-5"></div>
                             <div className="flex justify-between">
-                                <button className="flex  text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">
+                                <button
+                                    onClick={() =>
+                                        handleCart(book, "readinglist")
+                                    }
+                                    className="flex  text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded"
+                                >
                                     Added To Reading List
                                 </button>
-                                <button className="flex  text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">
+                                <button
+                                    onClick={() => handleCart(book, "wishlist")}
+                                    className="flex  text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded"
+                                >
                                     Added To Wishlist
                                 </button>
                             </div>
@@ -218,8 +255,8 @@ const BookDetails = () => {
             </div>
             <div className="w-1/2 dark:text-white flex justify-center">
                 <ul className=" space-y-5">
-                    {reviews?.reviews?.map((review) => (
-                        <li className="space-x-3">
+                    {reviews?.reviews?.map((review: string, index: number) => (
+                        <li key={index} className="space-x-3">
                             <Avatar
                                 size={40}
                                 src="https://source.unsplash.com/100x100/?portrait"

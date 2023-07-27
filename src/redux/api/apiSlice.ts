@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const api = createApi({
     reducerPath: "books",
     baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000/" }),
-    tagTypes: ["reviews"],
+    tagTypes: ["reviews", "wishlist"],
     endpoints: (builder) => ({
         getBooks: builder.query({
             query: () => `/api/v1/books`,
@@ -12,7 +12,7 @@ export const api = createApi({
             query: (id) => `/api/v1/book/${id}`,
         }),
         postReview: builder.mutation({
-            query: ({id, review}) => ({
+            query: ({ id, review }) => ({
                 url: `/api/v1/comment/${id}`,
                 method: "POST",
                 body: review,
@@ -22,8 +22,26 @@ export const api = createApi({
         getReviews: builder.query({
             query: (id) => `/api/v1/comment/${id}`,
             providesTags: ["reviews"],
-        })
+        }),
+        addToWishlist: builder.mutation({
+            query: ({ email, book, cart }) => ({
+                url: `/api/v1/book/${email}?cart=${cart}`,
+                method: "POST",
+                body: book,
+            }),
+        }),
+        getWishlist: builder.query({
+            query: (email) => `/api/v1/book/${email}`,
+            // providesTags: ["wishlist"],
+        }),
     }),
 });
 
-export const { useGetBooksQuery, useGetBookByIdQuery, usePostReviewMutation, useGetReviewsQuery } = api;
+export const {
+    useGetBooksQuery,
+    useGetBookByIdQuery,
+    usePostReviewMutation,
+    useGetReviewsQuery,
+    useAddToWishlistMutation,
+    useGetWishlistQuery,
+} = api;

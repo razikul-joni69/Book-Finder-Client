@@ -127,6 +127,8 @@ export const userSlice = createSlice({
                 state.isError = true;
                 state.error = action.payload as string;
             });
+
+            
     },
 });
 
