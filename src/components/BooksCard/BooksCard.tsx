@@ -68,7 +68,7 @@ const BooksCard = (data: []) => {
                                     className={`text-md font-bold  truncate dark:text-white`}
                                 >
                                     {book.author_name}{" "}
-                                    <span className="p-3 bg-white dark:bg-black rounded-full text-black dark:text-white ">
+                                    <span className="py-3 px-5 rounded-3xl bg-white dark:bg-black  text-black dark:text-white ">
                                         Author
                                     </span>
                                 </p>
@@ -100,27 +100,22 @@ const BooksCard = (data: []) => {
                             <div className="text-sm text-gray-500 dark:text-gray-300">
                                 {book?.description?.slice(0, 100)}
                             </div>
-                            <div className="flex space-x-2">
-                                <Rating
-                                    style={{ maxWidth: 130 }}
-                                    value={Math.random() * 3 + 2}
-                                    readOnly
-                                />
-                                <span className="bg-blue-100 text-blue-800 text-xs font-semibold p-1.5 rounded dark:bg-blue-200 dark:text-blue-800">
-                                    {book?.reviews.length}
+                            <div className="flex justify-between ">
+                                <div className="flex space-x-2">
+                                    <Rating
+                                        style={{ maxWidth: 130 }}
+                                        value={Math.random() * 3 + 2}
+                                        readOnly
+                                    />
+                                    <span className="bg-blue-100 text-blue-800 text-xs font-semibold p-1.5 rounded dark:bg-blue-200 dark:text-blue-800">
+                                        {book?.reviews.length}
+                                    </span>
+                                </div>
+                                <span className="text-gray-600 dark:text-white">
+                                    {book?.publish_date}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between">
-                                {/* 
-                                <button
-                                    onClick={() => handleSaveToCart(book)}
-                                    className=""
-                                    danger
-                                >
-                                    {book?.available_seats > 0
-                                        ? "Add to Cart"
-                                        : "Class Booked"}
-                                </button> */}
                                 <Button
                                     onClick={() =>
                                         handleCart(book, "readinglist")
@@ -138,6 +133,7 @@ const BooksCard = (data: []) => {
                                     Add To WishList
                                 </Button>
                             </div>
+                            <div></div>
                         </div>
                     </div>
                 ))}

@@ -2,6 +2,7 @@ import type { MenuProps } from "antd";
 import { Avatar, Button, Dropdown } from "antd";
 import { signOut } from "firebase/auth";
 import { Link, NavLink } from "react-router-dom";
+import Swal from "sweetalert2";
 import logo from "../../assets/images/logo.jpg";
 import auth from "../../configs/firebase.config";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
@@ -10,19 +11,29 @@ import { showErrorMessage, showSuccessMessage } from "../../utils/NotifyToast";
 
 const Navbar = () => {
     const { user, isLoading } = useAppSelector((state) => state.user);
-    
+
     const dispatch = useAppDispatch();
 
     const items: MenuProps["items"] = [
         {
             key: "1",
             label: (
-                <Link to="/profile">
+                <div
+                    onClick={() => {
+                        Swal.fire({
+                            title: "Feature Not Implimented!",
+                            text: "Feature not implemented yet! I will do it as soon as possible.",
+                            icon: "warning",
+                            confirmButtonColor: "#3085d6",
+                            timer: 5000,
+                        });
+                    }}
+                >
                     {user?.name}{" "}
                     <span className="bg-white rounded-full px-[7px]">
                         Profile
                     </span>
-                </Link>
+                </div>
             ),
         },
         {
@@ -43,7 +54,7 @@ const Navbar = () => {
     ];
     return (
         <div>
-            <nav className="mx-auto block w-full rounded-xl border border-white/80 bg-white bg-opacity-80 py-2 px-4 text-white shadow-md backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
+            <nav className="dark: mx-auto block w-full rounded-xl dark:rounded-none border border-white/80 bg-white dark:bg-slate-800 bg-opacity-80 py-2 px-4 text-white shadow-md backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
                 <div>
                     <div className="container mx-auto flex items-center justify-between text-gray-900">
                         <Link
@@ -56,23 +67,26 @@ const Navbar = () => {
                                 alt="Book Finder Logo"
                                 loading="lazy"
                             />
-                            <span className="font-bold text-xl dark:text-neutral-500">
+                            <span className="font-bold text-xl dark:text-white">
                                 Book Finder
                             </span>
                         </Link>
                         <ul className="hidden items-center gap-6 lg:flex">
-                            <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">
+                            <li className="dark:text-white  font-bold block p-1 font-sans text-sm leading-normal text-inherit antialiased">
                                 <NavLink to="/" className="flex items-center">
                                     Home
                                 </NavLink>
                             </li>
-                            <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">
-                                <NavLink to="/all-books" className="flex items-center" >
+                            <li className="dark:text-white  font-bold block p-1 font-sans text-sm leading-normal text-inherit antialiased">
+                                <NavLink
+                                    to="/all-books"
+                                    className="flex items-center"
+                                >
                                     All Books
                                 </NavLink>
                             </li>
-                            {user.role === "author" && (
-                                <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">
+                            {user && (
+                                <li className="dark:text-white  font-bold block p-1 font-sans text-sm leading-normal text-inherit antialiased">
                                     <NavLink
                                         to="add-books"
                                         className="flex items-center"
@@ -81,13 +95,16 @@ const Navbar = () => {
                                     </NavLink>
                                 </li>
                             )}
-                            <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">
-                                <a className="flex items-center" href="#">
-                                    Docs
+                            <li className="dark:text-white  font-bold block p-1 font-sans text-sm leading-normal text-inherit antialiased">
+                                <a
+                                    className="flex items-center"
+                                    href="#about-us"
+                                >
+                                    About Us
                                 </a>
                             </li>
                         </ul>
-                        <div>
+                        <div className="ml-auto mr-5">
                             {user?.email ? (
                                 <Dropdown
                                     menu={{ items }}
@@ -95,7 +112,7 @@ const Navbar = () => {
                                 >
                                     <a onClick={(e) => e.preventDefault()}>
                                         <Avatar
-                                            className="cursor-pointer"
+                                            className="cursor-pointer border-2 border-lime-600"
                                             size="large"
                                             src={user?.img}
                                         />
@@ -117,7 +134,7 @@ const Navbar = () => {
                             )}
                         </div>
                         <button
-                            className="middle none relative ml-auto h-6 max-h-[40px] w-6 max-w-[40px] rounded-lg text-center font-sans text-xs font-medium uppercase text-blue-gray-500 transition-all hover:bg-transparent focus:bg-transparent active:bg-transparent disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:hidden"
+                            className="middle dark:text-white none relative lg:ml-auto h-6 max-h-[40px] w-6 max-w-[40px] rounded-lg text-center font-sans text-xs font-medium uppercase text-blue-gray-500 transition-all hover:bg-transparent focus:bg-transparent active:bg-transparent disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:hidden"
                             data-collapse-target="navbar"
                         >
                             <span className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
@@ -138,7 +155,7 @@ const Navbar = () => {
                         </button>
                     </div>
                     <div
-                        className="block h-0 w-full basis-full overflow-hidden text-blue-gray-900 transition-all duration-300 ease-in lg:hidden"
+                        className="block  h-0 w-full basis-full overflow-hidden text-blue-gray-900 transition-all duration-300 ease-in lg:hidden"
                         data-collapse="navbar"
                     >
                         <div className="container mx-auto pb-2">
