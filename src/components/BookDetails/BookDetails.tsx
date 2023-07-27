@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
     useAddToWishlistMutation,
+    useDeleteBookMutation,
     useGetBookByIdQuery,
     useGetReviewsQuery,
     usePostReviewMutation,
@@ -24,7 +25,8 @@ const BookDetails = () => {
 
     const { data, isLoading } = useGetBookByIdQuery(id);
     const { user } = useAppSelector((state) => state.user);
-    const [postReview, { isError, isSuccess, error, data: commentResponse }] = usePostReviewMutation();
+    const [postReview, { isError, isSuccess, error, data: commentResponse }] =
+        usePostReviewMutation();
     const [
         addToWishlist,
         {
@@ -34,8 +36,8 @@ const BookDetails = () => {
             data: response,
         },
     ] = useAddToWishlistMutation();
-    const { data: reviews, } = useGetReviewsQuery(id);
-    
+    const { data: reviews } = useGetReviewsQuery(id);
+    const [deleteBook, options] = useDeleteBookMutation();
 
     let book = {};
     if (data) {
@@ -49,32 +51,72 @@ const BookDetails = () => {
     if (commentResponse?.statusCode === 200) {
         showSuccessMessage(commentResponse?.message);
     }
-        const handleCommentSubmit = (e) => {
-            e.preventDefault();
-            if (!user?.email) {
+    const handleCommentSubmit = (e) => {
+        e.preventDefault();
+        if (!user?.email) {
+            Swal.fire({
+                title: "Are you sure you want to login?",
+                text: "You have to login or register to leave a comment.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, Login!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate("/login");
+                }
+            });
+        } else {
+            const comment = e.target.comment.value;
+            const options = {
+                id,
+                review: { comment },
+            };
+            postReview(options);
+            e.target.reset();
+        }
+    };
+    const handleBookDelete = (e: Event, id: string) => {
+        e.preventDefault();
+        Swal.fire({
+            title: "Are you sure you want to Delete?",
+            text: "Are you sure? You are going to delete your book.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Delete!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteBook(id);
                 Swal.fire({
-                    title: "Are you sure you want to login?",
-                    text: "You have to login or register to leave a comment.",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, Login!",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        navigate("/login");
-                    }
+                    title: "Deleted!",
+                    text: "Your book has been deleted.",
+                    icon: "success",
+                    timer: 1500,
                 });
-            } else {
-                const comment = e.target.comment.value;
-                const options = {
-                    id,
-                    review: { comment },
-                };
-                postReview(options);
-                e.target.reset();
+                navigate("/");
             }
-        };
+        });
+    };
+
+    const handleBookEdit = (e: Event, id: string) => {
+        e.preventDefault();
+        Swal.fire({
+            title: "Are you sure you want to Edit?",
+            text: "You are going to edit your book.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Edit!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                navigate(`/book/edit/${id}`);
+            }
+        });
+    };
 
     if (response?.statusCode === 200) {
         showSuccessMessage(response?.message);
@@ -218,11 +260,21 @@ const BookDetails = () => {
                                 </button>
                             </div>
                             {user.email === book.author_email && (
-                                <div className="flex justify-between my-3">
-                                    <button className="flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">
+                                <div className="flex justify-between my-3 pt-2">
+                                    <button
+                                        onClick={(e) =>
+                                            handleBookEdit(e, book?._id)
+                                        }
+                                        className="flex  bg-yellow-300 border-0 py-2 px-6 focus:outline-none hover:bg-yellow-400 rounded"
+                                    >
                                         Edit Book
                                     </button>
-                                    <button className="flex  text-white bg-orange-700 border-0 py-2 px-6 focus:outline-none hover:bg-orange-800 rounded">
+                                    <button
+                                        onClick={(e) =>
+                                            handleBookDelete(e, book?._id)
+                                        }
+                                        className="flex  text-white bg-orange-700 border-0 py-2 px-6 focus:outline-none hover:bg-orange-800 rounded"
+                                    >
                                         Delete Book
                                     </button>
                                 </div>
