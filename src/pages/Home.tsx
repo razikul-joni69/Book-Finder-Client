@@ -1,11 +1,16 @@
 import { NavLink } from "react-router-dom";
 import BooksCard from "../components/BooksCard/BooksCard";
 import HeroSection from "../components/HeroSection/HeroSection";
+import Loading from "../components/Loading/Loading";
 import Titles from "../components/Titles/Titles";
 import { useGetBooksQuery } from "../redux/api/apiSlice";
 
 const Home = () => {
-    const { data } = useGetBooksQuery(undefined);
+    const { data, isLoading } = useGetBooksQuery(undefined);
+
+    if (isLoading) {
+        return <Loading />;
+    }
 
     return (
         <div className="dark:bg-slate-800">

@@ -3,9 +3,10 @@ import BooksCard from "../components/BooksCard/BooksCard";
 import Titles from "../components/Titles/Titles";
 import { IAddBook } from "../globalTypes/globalTypes";
 import { useGetBooksQuery } from "../redux/api/apiSlice";
+import Loading from "../components/Loading/Loading";
 
 const AllBooks = () => {
-    const { data } = useGetBooksQuery(undefined);
+    const { data, isLoading } = useGetBooksQuery(undefined);
     const [searchTerm, setSearchTerm] = useState("");
     const [books, setBooks] = useState<IAddBook[]>([]);
     useEffect(() => {
@@ -42,6 +43,11 @@ const AllBooks = () => {
             setBooks(filteredBooks);
         }
     };
+
+    if(isLoading){
+        return <Loading/>
+    }
+
     return (
         <div className="py-10 dark:bg-slate-800">
             <Titles
