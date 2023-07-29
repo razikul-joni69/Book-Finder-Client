@@ -18,7 +18,12 @@ const AllBooks = () => {
                 a?.genre?.localeCompare(b?.genre)
             );
             setBooks(sortedByGenre);
-        } 
+        } else if (e?.target?.value === "year") {
+            const sortedByGenre = [...books].sort((a, b) =>
+                a?.publish_date?.localeCompare(b?.publish_date)
+            );
+            setBooks(sortedByGenre);
+        }
     };
 
     const handleSearch = (e: any) => {
