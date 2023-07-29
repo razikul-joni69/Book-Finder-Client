@@ -1,56 +1,54 @@
 /* eslint-disable react/prop-types */
-import { Rating } from "@smastrom/react-rating";
 import { Button } from "antd";
-import { Link } from "react-router-dom";
+import { AiFillStar } from "react-icons/ai";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import StarRatingComponent from "react-star-rating-component";
+import Swal from "sweetalert2";
 import { useAddToWishlistMutation } from "../../redux/api/apiSlice";
 import { useAppSelector } from "../../redux/hooks";
-import {
-    showErrorMessage,
-    showSuccessMessage,
-    showWarning,
-} from "../../utils/NotifyToast";
-// import axios from "axios";
-// import { useContext } from "react";
-// import { useNavigate } from "react-router-dom";
-// import useGetCurrentUser from "../../hooks/useGetCurrentUser";
-// import { AuthContext } from "../../providers/AuthProvider";
-// import { showErrorMessage, showSuccessMessage } from "../../utils/Notification";
-// import Loading from "../Loading/Loading";
+import { showSuccessMessage, showWarning } from "../../utils/NotifyToast";
 
-const BooksCard = (data: []) => {
+const BooksCard = (data: any) => {
     const { user } = useAppSelector((state) => state.user);
+    const navigate = useNavigate();
 
-    const [
-        addToWishlist,
-        {
-            isError: isWishlistError,
-            isSuccess: isWishlistSuccess,
-            error: wishlistError,
-            data: response,
-        },
-    ] = useAddToWishlistMutation();
+    const [addToWishlist, { data: response }] = useAddToWishlistMutation();
 
     if (response?.statusCode === 200) {
         showSuccessMessage(response?.message);
     } else if (response?.statusCode === 409) {
         showWarning(response?.message);
-    } else if (isWishlistError) {
-        showErrorMessage(wishlistError?.message);
     }
 
     const handleCart = (book: object, cart: string) => {
-        const options = {
-            email: user?.email,
-            book: { book },
-            cart,
-        };
-        addToWishlist(options);
+        if (!user?.email) {
+            Swal.fire({
+                title: "Are you sure to Login?",
+                text: "You have to register or login to add to wishlist or readinglist.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, Login!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate("/login");
+                }
+            });
+        } else {
+            const options = {
+                email: user?.email,
+                book: { book },
+                cart,
+            };
+            addToWishlist(options);
+        }
     };
 
     return (
         <div className="my-10">
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 justify-items-center">
-                {data?.books?.map((book) => (
+                {data?.books?.map((book: any) => (
                     <div
                         key={book._id}
                         className={`w-full max-w-sm border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-5`}
@@ -98,14 +96,26 @@ const BooksCard = (data: []) => {
                                 <h4>Book Genre: {book?.genre}</h4>
                             </div>
                             <div className="text-sm text-gray-500 dark:text-gray-300">
-                                {book?.description?.slice(0, 100)}
+                                {book?.description?.slice(0, 100)}...{" "}
+                                <NavLink
+                                    className="text-green-600"
+                                    to={`/book/${book._id}`}
+                                >
+                                    Read More
+                                </NavLink>
                             </div>
                             <div className="flex justify-between ">
                                 <div className="flex space-x-2">
-                                    <Rating
-                                        style={{ maxWidth: 130 }}
-                                        value={Math.random() * 3 + 2}
-                                        readOnly
+                                    <StarRatingComponent
+                                        editing={false}
+                                        renderStarIcon={() => (
+                                            <span>
+                                                <AiFillStar className="w-8 h-8" />
+                                            </span>
+                                        )}
+                                        name="rate1"
+                                        starCount={5}
+                                        value={Math.random() * 3 + 3}
                                     />
                                     <span className="bg-blue-100 text-blue-800 text-xs font-semibold p-1.5 rounded dark:bg-blue-200 dark:text-blue-800">
                                         {book?.reviews.length}

@@ -1,7 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../redux/hooks";
 import {
-    continueWithFacebook,
     continueWithGithub,
     continueWithGoogle,
     loginUser,
@@ -18,11 +17,11 @@ const Login = () => {
 
     const from = location.state?.from?.pathname || "/";
 
-    const handleUserLogin = (e: Event) => {
+    const handleUserLogin = (e: any) => {
         e.preventDefault();
 
-        const email = e.target.email.value;
-        const password = e.target.password.value;
+        const email = e?.target?.email?.value;
+        const password = e?.target?.password?.value;
 
         if (password.length < 6) {
             showErrorMessage("Password must be at least 6 characters");
@@ -32,8 +31,8 @@ const Login = () => {
                     if (res?.type === "user/login/fulfilled") {
                         showSuccessMessage("👍 Email SignIn Successful!");
                         navigate(from, { replace: true });
-                    } else if (res?.type === "user/login/rejected") {
-                        showErrorMessage(res?.error?.message);
+                    } else if ("error" in res) {
+                        showErrorMessage(res?.error?.message as string);
                     }
                 })
                 .catch((err: any) => {
@@ -45,8 +44,8 @@ const Login = () => {
     const handleGoogleLogin = () => {
         dispatch(continueWithGoogle())
             .then((res) => {
-                if (res?.type === "user/continueWithGoogle/rejected") {
-                    showErrorMessage(res?.error?.message);
+                if ("error" in res) {
+                    showErrorMessage(res?.error?.message as string);
                 } else if (res?.type === "user/continueWithGoogle/fulfilled") {
                     saveUserToDb(
                         res?.payload?.displayName,
@@ -65,8 +64,8 @@ const Login = () => {
     const handleGithubLogin = () => {
         dispatch(continueWithGithub())
             .then((res) => {
-                if (res?.type === "user/continueWithGithub/rejected") {
-                    showErrorMessage(res?.error?.message);
+                if ("error" in res) {
+                    showErrorMessage(res?.error?.message as string);
                 } else if (res?.type === "user/continueWithGithub/fullfilled") {
                     saveUserToDb(
                         res?.payload?.displayName,
@@ -82,27 +81,28 @@ const Login = () => {
             });
     };
 
-    const handleFacebookLogin = () => {
-        dispatch(continueWithFacebook())
-            .then((res: any) => {
-                if (res?.type === "user/continueWithFacebook/rejected") {
-                    showErrorMessage(res?.error?.message);
-                } else if (
-                    res?.type === "user/continueWithFacebook/fulfilled"
-                ) {
-                    saveUserToDb(
-                        res?.payload?.displayName,
-                        res?.payload?.email,
-                        res?.payload?.photoURL
-                    );
-                    showSuccessMessage("👍 Facebook SignIn Successfully!");
-                    navigate(from, { replace: true });
-                }
-            })
-            .catch((err: any) => {
-                showErrorMessage(err.message);
-            });
-    };
+    // INFO: impliment later
+    // const handleFacebookLogin = () => {
+    //     dispatch(continueWithFacebook())
+    //         .then((res: any) => {
+    //             if (res?.type === "user/continueWithFacebook/rejected") {
+    //                 showErrorMessage(res?.error?.message);
+    //             } else if (
+    //                 res?.type === "user/continueWithFacebook/fulfilled"
+    //             ) {
+    //                 saveUserToDb(
+    //                     res?.payload?.displayName,
+    //                     res?.payload?.email,
+    //                     res?.payload?.photoURL
+    //                 );
+    //                 showSuccessMessage("👍 Facebook SignIn Successfully!");
+    //                 navigate(from, { replace: true });
+    //             }
+    //         })
+    //         .catch((err: any) => {
+    //             showErrorMessage(err.message);
+    //         });
+    // };
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-[#1d232a]  flex flex-col justify-center sm:py-12">

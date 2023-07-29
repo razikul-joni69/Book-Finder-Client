@@ -19,7 +19,9 @@ const Layout = () => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 axios
-                    .get(`http://localhost:8000/api/v1/users/${user?.email}`)
+                    .get(
+                        `https://book-finder-server-alpha.vercel.app/api/v1/users/${user?.email}`
+                    )
                     .then((res) => {
                         dispatch(setUser(res?.data));
                         dispatch(setLoading(false));
@@ -30,8 +32,7 @@ const Layout = () => {
                     .finally(() => {
                         dispatch(setLoading(false));
                     });
-            } 
-            else {
+            } else {
                 dispatch(setUser(null));
                 dispatch(setLoading(false));
             }

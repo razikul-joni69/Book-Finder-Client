@@ -1,6 +1,8 @@
 import axios from "axios";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { IAddBook } from "../../globalTypes/globalTypes.js";
+import { usePostBookMutation } from "../../redux/api/apiSlice.js";
 import { useAppSelector } from "../../redux/hooks.js";
 import {
     showErrorMessage,
@@ -12,15 +14,22 @@ const AddBooks = () => {
     const navigate = useNavigate();
 
     const { user, isLoading } = useAppSelector((state) => state.user);
+    const [postBook, { data }] = usePostBookMutation();
 
     const {
         register,
         handleSubmit,
-        reset,
         formState: { errors },
-    } = useForm();
+    } = useForm<IAddBook>();
 
-    const onSubmit = async (data) => {
+    if (data?.insertedId) {
+        showSuccessMessage("📖 Book Added Successfully!");
+        navigate("/all-books");
+    }
+    // if (error) {
+    //     showErrorMessage(error);
+    // }
+    const onSubmit: SubmitHandler<IAddBook> = async (data: IAddBook) => {
         const imageUploadToken = import.meta.env.VITE_Image_Upload_Token;
         const imageHostingUrl = `https://api.imgbb.com/1/upload?key=${imageUploadToken}`;
 
@@ -28,8 +37,6 @@ const AddBooks = () => {
         data.author_email = user?.email;
         data.author_img = user?.img;
         data.reviews = [];
-
-        console.log(data);
 
         const formData = new FormData();
         formData.append("image", data.img[0]);
@@ -40,36 +47,18 @@ const AddBooks = () => {
                 .then((img) => {
                     if (img.status === 200) {
                         data.img = img?.data?.data?.display_url;
-                        axios
-                            .post("http://localhost:8000/api/v1/books", data)
-                            .then((res) => {
-                                if (res?.data?.insertedId) {
-                                    showSuccessMessage(
-                                        "📖 Book Added Successfully!"
-                                    );
-                                    // axios
-                                    //     .patch(
-                                    //         `http://localhost:8000/api/v1/users/${user?.email}?addNewClass=true`
-                                    //     )
-                                    //     .then((res) => {
-                                    //         // reset();
-                                    //         // navigate("/dashboard/all-classes");
-                                    //     })
-                                    //     .catch((err) => {
-                                    //         showErrorMessage(err.message);
-                                    //     });
-                                }
-                            })
-                            .catch((err) => {
-                                showErrorMessage(err.message);
-                            });
+                        postBook(data);
                     }
                 })
                 .catch((err) => {
-                    showErrorMessage(err.message);
+                    showErrorMessage(err?.message);
                 });
         } catch (err) {
-            showErrorMessage(err.message);
+            if (err instanceof Error) {
+                showErrorMessage(err?.message);
+            } else {
+                showErrorMessage("An error occurred.");
+            }
         }
     };
 
@@ -148,39 +137,6 @@ const AddBooks = () => {
                                     required
                                 />
                             </div>
-                            {/* <div>
-                                <label
-                                    htmlFor="total_seats"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Total Seats
-                                </label>
-                                <input
-                                    {...register("total_seats")}
-                                    type="number"
-                                    name="total_seats"
-                                    id="total_seats"
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                    placeholder="50"
-                                    required
-                                />
-                            </div>
-                            <div className="w-full">
-                                <label
-                                    htmlFor="total_lessons"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Total Lessons
-                                </label>
-                                <input
-                                    {...register("total_lessons")}
-                                    type="number"
-                                    id="total_lessons"
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                    placeholder="50"
-                                    required
-                                />
-                            </div> */}
                             <div className="col-span-2">
                                 <label
                                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"

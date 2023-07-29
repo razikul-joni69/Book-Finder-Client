@@ -35,7 +35,7 @@ const initialState: IUser = {
         name: null,
         email: null,
         img: null,
-        role: null
+        role: null,
     },
     isLoading: false,
     isError: false,
@@ -127,8 +127,6 @@ export const userSlice = createSlice({
                 state.isError = true;
                 state.error = action.payload as string;
             });
-
-            
     },
 });
 

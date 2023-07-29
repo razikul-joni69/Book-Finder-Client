@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 a.active {
     background-color: black;
     padding: 10px 20px;

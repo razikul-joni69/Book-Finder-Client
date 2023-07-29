@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-const Titles = ({ title, subTitle }) => {
+const Titles = ({ title, subTitle }: { title: string; subTitle: string }) => {
     return (
         <div className="mb-6 text-center">
             <div className="space-y-2 text-center">

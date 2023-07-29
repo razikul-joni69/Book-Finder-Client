@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { IBOok } from "../../globalTypes/globalTypes.js";
 import {
     useGetBookByIdQuery,
     useUpdateBookMutation,
@@ -18,17 +19,12 @@ const EditBook = () => {
     const { data, isLoading: isBookLoading } = useGetBookByIdQuery(id);
 
     const { user, isLoading } = useAppSelector((state) => state.user);
-    const [updateBook, { data: updatedBookData, status, error }] =
+    const [updateBook, { data: updatedBookData, status }] =
         useUpdateBookMutation();
 
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors },
-    } = useForm();
+    const { register, handleSubmit } = useForm();
 
-    let book = {};
+    let book: IBOok = {};
     if (data) {
         book = data[0];
     }
@@ -38,7 +34,7 @@ const EditBook = () => {
         navigate(`/book/${id}`);
     }
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: Partial<IBOok>) => {
         try {
             const updatedData = {
                 id,
@@ -46,7 +42,11 @@ const EditBook = () => {
             };
             updateBook(updatedData);
         } catch (err) {
-            showErrorMessage(err?.message);
+            if (err instanceof Error) {
+                showErrorMessage(err?.message);
+            } else {
+                showErrorMessage("An error occurred.");
+            }
         }
     };
 
@@ -101,7 +101,7 @@ const EditBook = () => {
                                     Book Name
                                 </label>
                                 <input
-                                    defaultValue={book?.book_name}
+                                    defaultValue={book?.book_name as string}
                                     {...register("book_name")}
                                     type="text"
                                     id="name"
@@ -118,7 +118,7 @@ const EditBook = () => {
                                     Genre
                                 </label>
                                 <input
-                                    defaultValue={book?.genre}
+                                    defaultValue={book?.genre as string}
                                     {...register("genre")}
                                     type="text"
                                     id="genre"

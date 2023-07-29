@@ -1,8 +1,11 @@
-import { Rating } from "@smastrom/react-rating";
 import { Avatar } from "antd";
+import React from "react";
+import { AiFillStar } from "react-icons/ai";
 import { BsFillSendCheckFill } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
+import StarRatingComponent from "react-star-rating-component";
 import Swal from "sweetalert2";
+import { IBOok } from "../../globalTypes/globalTypes";
 import {
     useAddToWishlistMutation,
     useDeleteBookMutation,
@@ -13,45 +16,39 @@ import {
 import { useAppSelector } from "../../redux/hooks";
 import {
     showErrorMessage,
+    showInfoMessage,
     showSuccessMessage,
     showWarning,
 } from "../../utils/NotifyToast";
 import Loading from "../Loading/Loading";
 import Titles from "../Titles/Titles";
-
 const BookDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
     const { data, isLoading } = useGetBookByIdQuery(id);
     const { user } = useAppSelector((state) => state.user);
-    const [postReview, { isError, isSuccess, error, data: commentResponse }] =
+    const [postReview, { isError, error, data: commentResponse }] =
         usePostReviewMutation();
-    const [
-        addToWishlist,
-        {
-            isError: isWishlistError,
-            isSuccess: isWishlistSuccess,
-            error: wishlistError,
-            data: response,
-        },
-    ] = useAddToWishlistMutation();
+    const [addToWishlist, { data: response }] = useAddToWishlistMutation();
     const { data: reviews } = useGetReviewsQuery(id);
-    const [deleteBook, options] = useDeleteBookMutation();
+    const [deleteBook] = useDeleteBookMutation();
 
-    let book = {};
+    let book: IBOok = {};
     if (data) {
         book = data[0];
     }
 
-    if (isError) {
-        showErrorMessage(error?.message);
+    if (isError && error != null) {
+        if ("error" in error) {
+            showErrorMessage(error?.status);
+        }
     }
 
     if (commentResponse?.statusCode === 200) {
         showSuccessMessage(commentResponse?.message);
     }
-    const handleCommentSubmit = (e) => {
+    const handleCommentSubmit = (e: any) => {
         e.preventDefault();
         if (!user?.email) {
             Swal.fire({
@@ -77,7 +74,10 @@ const BookDetails = () => {
             e.target.reset();
         }
     };
-    const handleBookDelete = (e: Event, id: string) => {
+    const handleBookDelete = (
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+        id: string | null | undefined
+    ) => {
         e.preventDefault();
         Swal.fire({
             title: "Are you sure you want to Delete?",
@@ -101,7 +101,10 @@ const BookDetails = () => {
         });
     };
 
-    const handleBookEdit = (e: Event, id: string) => {
+    const handleBookEdit = (
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+        id: string | null | undefined
+    ) => {
         e.preventDefault();
         Swal.fire({
             title: "Are you sure you want to Edit?",
@@ -133,6 +136,15 @@ const BookDetails = () => {
         addToWishlist(options);
     };
 
+    const handleMarkAsRead = () => {
+        // const options = {
+        //     email: user?.email,
+        //     id,
+        // };
+        showInfoMessage("Not implimented yet. I will do it soon");
+        // markAsRead(options);
+    };
+
     if (isLoading) {
         return <Loading />;
     }
@@ -149,33 +161,42 @@ const BookDetails = () => {
                         <img
                             alt="ecommerce"
                             className="lg:w-1/2 w-full lg:h-auto max-h-[500px] h-64 object-cover object-center rounded"
-                            src={book?.img}
+                            src={book?.img || ""}
                         />
                         <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
-                            <div className="flex items-center space-x-4">
-                                <div className="flex-shrink-0">
-                                    <img
-                                        className="rounded-full w-14 h-14"
-                                        src={book?.author_img}
-                                        alt="Bonnie image"
-                                    />
-                                </div>
-                                <div className={`flex-1 min-w-0`}>
-                                    <p
-                                        className={`text-md font-bold  truncate dark:text-white`}
+                            <div className="flex">
+                                <div className="flex items-center space-x-4">
+                                    <div className="flex-shrink-0">
+                                        <img
+                                            className="rounded-full w-14 h-14"
+                                            src={book?.author_img || ""}
+                                            alt="Bonnie image"
+                                        />
+                                    </div>
+                                    <div className={`flex-1 min-w-0`}>
+                                        <p
+                                            className={`text-md font-bold  truncate dark:text-white`}
+                                        >
+                                            {book?.author_name}{" "}
+                                            <span className="p-3 bg-white dark:bg-black rounded-full text-black dark:text-white ">
+                                                Author
+                                            </span>
+                                        </p>
+                                        <p
+                                            className={`text-sm truncate dark:text-gray-400`}
+                                        >
+                                            {book?.author_email}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => handleMarkAsRead()}
+                                        className="flex  text-white bg-orange-700 border-0 py-2 px-6 focus:outline-none hover:bg-orange-800 rounded"
                                     >
-                                        {book.author_name}{" "}
-                                        <span className="p-3 bg-white dark:bg-black rounded-full text-black dark:text-white ">
-                                            Author
-                                        </span>
-                                    </p>
-                                    <p
-                                        className={`text-sm truncate dark:text-gray-400`}
-                                    >
-                                        {book?.author_email}
-                                    </p>
+                                        Mark As Read
+                                    </button>
                                 </div>
                             </div>
+
                             <hr className="my-4" />
                             <h2 className="text-sm title-font text-gray-500 dark:text-white tracking-widest">
                                 BOOK NAME
@@ -191,10 +212,16 @@ const BookDetails = () => {
                             </div>
                             <div className="flex mb-4">
                                 <span className="flex items-center">
-                                    <Rating
-                                        style={{ maxWidth: 130 }}
-                                        value={Math.random() * 3 + 2}
-                                        readOnly
+                                    <StarRatingComponent
+                                        editing={false}
+                                        renderStarIcon={() => (
+                                            <span>
+                                                <AiFillStar className="w-8 h-8" />
+                                            </span>
+                                        )}
+                                        name="rate1"
+                                        starCount={5}
+                                        value={Math.random() * 3 + 3}
                                     />
                                     <span className="text-gray-600 dark:text-white ml-3">
                                         {book?.reviews?.length} Reviews
@@ -293,7 +320,7 @@ const BookDetails = () => {
                     <textarea
                         name="comment"
                         id=""
-                        className="w-1/2 rounded-full p-1 px-3"
+                        className="w-3/4 md:w-1/2 rounded-full p-1 px-3 border-2"
                         placeholder="Share your experience"
                         required
                     ></textarea>
@@ -305,13 +332,15 @@ const BookDetails = () => {
                     </button>
                 </form>
             </div>
-            <div className="w-1/2 dark:text-white flex justify-center">
+            <div className="w-full md:w-1/2 dark:text-white flex justify-center">
                 <ul className=" space-y-5">
                     {reviews?.reviews?.map((review: string, index: number) => (
                         <li key={index} className="space-x-3">
                             <Avatar
                                 size={40}
-                                src="https://source.unsplash.com/100x100/?portrait"
+                                src={
+                                    "https://source.unsplash.com/100x100/?portrait"
+                                }
                             >
                                 USER
                             </Avatar>

@@ -9,9 +9,9 @@ interface IRestData {
 }
 
 const saveUserToDb = async (
-    name: string,
-    email: string,
-    photoURL: string,
+    name: string | null,
+    email: string | null,
+    photoURL: string | null,
     ...rest: IRestData[]
 ) => {
     const user = {
@@ -25,11 +25,16 @@ const saveUserToDb = async (
     };
 
     await axios
-        .get(`http://localhost:8000/api/v1/users/${email}`)
+        .get(
+            `https://book-finder-server-alpha.vercel.app/api/v1/users/${email}`
+        )
         .then((res) => {
             if (res?.data?.email !== email) {
                 axios
-                    .post(`http://localhost:8000/api/v1/users`, user)
+                    .post(
+                        `https://book-finder-server-alpha.vercel.app/api/v1/users`,
+                        user
+                    )
                     .then((res) => {
                         if (res?.data.insertedId) {
                             showSuccessMessage(

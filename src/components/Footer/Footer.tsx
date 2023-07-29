@@ -1,7 +1,13 @@
-import { Input } from "antd";
+import { Link } from "react-router-dom";
+import logo from "../../assets/images/logo.jpg";
+import { showInfoMessage } from "../../utils/NotifyToast";
 
 const Footer = () => {
-    const { Search } = Input;
+    const handleSubscribe = (e: any) => {
+        e.preventDefault();
+        showInfoMessage("Thank you for subscribing");
+        e.target.reset();
+    };
     return (
         <div id="about-us" className="dark:bg-slate-800 border-t-2">
             <footer className="text-gray-600 dark:text-white body-font">
@@ -12,8 +18,8 @@ const Footer = () => {
                                 <a className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900 dark:text-white dark:hover:text-gray-300">
                                     <img
                                         className="h-12 w- 12 rounded-md"
-                                        src="./logo.jpg"
-                                        alt=""
+                                        src={logo}
+                                        alt="Logo"
                                     />
                                     <span className="ml-3 text-xl">
                                         Book Finder
@@ -27,34 +33,46 @@ const Footer = () => {
                         </div>
                         <div className="lg:w-1/4 md:w-1/2 w-full px-4">
                             <h2 className="title-font font-medium text-gray-900 tracking-widest text-sm mb-3 dark:text-white dark:hover:text-gray-300">
-                                CATEGORIES
+                                USEFULL LINKS
                             </h2>
                             <nav className="list-none mb-10">
                                 <li>
-                                    <a className="text-gray-600 hover:text-gray-800 dark:text-white dark:hover:text-gray-300">
-                                        First Link
-                                    </a>
+                                    <Link
+                                        to="/"
+                                        className="text-gray-600 hover:text-gray-800 dark:text-white dark:hover:text-gray-300"
+                                    >
+                                        Home
+                                    </Link>
                                 </li>
                                 <li>
-                                    <a className="text-gray-600 hover:text-gray-800 dark:text-white dark:hover:text-gray-300">
-                                        Second Link
-                                    </a>
+                                    <Link
+                                        to="/all-books"
+                                        className="text-gray-600 hover:text-gray-800 dark:text-white dark:hover:text-gray-300"
+                                    >
+                                        All Books
+                                    </Link>
                                 </li>
                                 <li>
-                                    <a className="text-gray-600 hover:text-gray-800 dark:text-white dark:hover:text-gray-300">
-                                        Third Link
-                                    </a>
+                                    <Link
+                                        to="/login"
+                                        className="text-gray-600 hover:text-gray-800 dark:text-white dark:hover:text-gray-300"
+                                    >
+                                        Login
+                                    </Link>
                                 </li>
                                 <li>
-                                    <a className="text-gray-600 hover:text-gray-800 dark:text-white dark:hover:text-gray-300">
-                                        Fourth Link
-                                    </a>
+                                    <Link
+                                        to="/register"
+                                        className="text-gray-600 hover:text-gray-800 dark:text-white dark:hover:text-gray-300"
+                                    >
+                                        Register
+                                    </Link>
                                 </li>
                             </nav>
                         </div>
                         <div className="lg:w-1/4 md:w-1/2 w-full px-4">
                             <h2 className="title-font font-medium text-gray-900 tracking-widest text-sm mb-3 dark:text-white dark:hover:text-gray-300">
-                                CATEGORIES
+                                Other Links
                             </h2>
                             <nav className="list-none mb-10">
                                 <li>
@@ -91,13 +109,24 @@ const Footer = () => {
                                     >
                                         Subscribe to our Newsletter
                                     </label>
-                                    <Search
-                                        className="bg-blue-500 rounded-md"
-                                        placeholder="Enter your email"
-                                        allowClear
-                                        enterButton="Subscribe"
-                                        size="large"
-                                    />
+                                    <form
+                                        onSubmit={handleSubscribe}
+                                        className="block md:flex"
+                                    >
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
+                                            placeholder="name@flowbite.com"
+                                            required
+                                        />
+                                        <button
+                                            type="submit"
+                                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                        >
+                                            SUBSCRIBE
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                             <p className="text-gray-500 text-sm mt-2 md:text-left text-center dark:text-white dark:hover:text-gray-300">

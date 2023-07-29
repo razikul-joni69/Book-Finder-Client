@@ -2,9 +2,19 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
     reducerPath: "books",
-    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000/" }),
-    tagTypes: ["reviews", "wishlist", "updateBook"],
+    baseQuery: fetchBaseQuery({
+        baseUrl: "https://book-finder-server-alpha.vercel.app/",
+    }),
+    tagTypes: ["reviews", "updateBook"],
     endpoints: (builder) => ({
+        postBook: builder.mutation({
+            query: (book) => ({
+                url: `/api/v1/books`,
+                method: "POST",
+                body: book,
+            }),
+            invalidatesTags: ["reviews"],
+        }),
         getBooks: builder.query({
             query: () => `/api/v1/books`,
             providesTags: ["updateBook"],
@@ -30,6 +40,12 @@ export const api = createApi({
                 url: `/api/v1/book/${email}?cart=${cart}`,
                 method: "POST",
                 body: book,
+            }),
+        }),
+        markAsRead: builder.mutation({
+            query: ({ email, id }) => ({
+                url: `/api/v1/user/${email}?id=${id}`,
+                method: "PATCH",
             }),
         }),
         getWishlist: builder.query({
@@ -62,4 +78,6 @@ export const {
     useGetWishlistQuery,
     useUpdateBookMutation,
     useDeleteBookMutation,
+    useMarkAsReadMutation,
+    usePostBookMutation,
 } = api;

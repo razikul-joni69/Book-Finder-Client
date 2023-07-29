@@ -1,6 +1,7 @@
 import type { MenuProps } from "antd";
 import { Avatar, Button, Dropdown } from "antd";
 import { signOut } from "firebase/auth";
+import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import Swal from "sweetalert2";
 import logo from "../../assets/images/logo.jpg";
@@ -8,9 +9,11 @@ import auth from "../../configs/firebase.config";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setUser } from "../../redux/user/userSlice";
 import { showErrorMessage, showSuccessMessage } from "../../utils/NotifyToast";
+import Loading from "../Loading/Loading";
 
 const Navbar = () => {
     const { user, isLoading } = useAppSelector((state) => state.user);
+    const [menuToggle, setMenuToggle] = useState(false);
 
     const dispatch = useAppDispatch();
 
@@ -52,11 +55,15 @@ const Navbar = () => {
             label: "LogOut",
         },
     ];
+
+    if (isLoading) {
+        return <Loading />;
+    }
     return (
-        <div>
-            <nav className="dark: mx-auto block w-full rounded-xl dark:rounded-none border border-white/80 bg-white dark:bg-slate-800 bg-opacity-80 py-2 px-4 text-white shadow-md backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
+        <div className="">
+            <nav className="dark: mx-auto block w-full rounded-xl dark:rounded-none border border-white/80 bg-white dark:bg-slate-800 bg-opacity-80 py-2 px-4 text-white shadow-md backdrop-blur-2xl backdrop-saturate-200 lg:px-8 ">
                 <div>
-                    <div className="container mx-auto flex items-center justify-between text-gray-900">
+                    <div className="container mx-auto flex h-[45px] items-center justify-between text-gray-900">
                         <Link
                             to="/"
                             className="mx-2 my-1 flex items-center text-neutral-900 hover:text-neutral-900 focus:text-neutral-900 lg:mb-0 lg:mt-0"
@@ -71,7 +78,7 @@ const Navbar = () => {
                                 Book Finder
                             </span>
                         </Link>
-                        <ul className="hidden items-center gap-6 lg:flex">
+                        <ul className="hidden items-center mx-auto gap-6 lg:flex">
                             <li className="dark:text-white  font-bold block p-1 font-sans text-sm leading-normal text-inherit antialiased">
                                 <NavLink to="/" className="flex items-center">
                                     Home
@@ -85,7 +92,7 @@ const Navbar = () => {
                                     All Books
                                 </NavLink>
                             </li>
-                            {user && (
+                            {user?.email && (
                                 <li className="dark:text-white  font-bold block p-1 font-sans text-sm leading-normal text-inherit antialiased">
                                     <NavLink
                                         to="add-books"
@@ -134,6 +141,7 @@ const Navbar = () => {
                             )}
                         </div>
                         <button
+                            onClick={() => setMenuToggle(!menuToggle)}
                             className="middle dark:text-white none relative lg:ml-auto h-6 max-h-[40px] w-6 max-w-[40px] rounded-lg text-center font-sans text-xs font-medium uppercase text-blue-gray-500 transition-all hover:bg-transparent focus:bg-transparent active:bg-transparent disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:hidden"
                             data-collapse-target="navbar"
                         >
@@ -154,41 +162,51 @@ const Navbar = () => {
                             </span>
                         </button>
                     </div>
-                    <div
-                        className="block  h-0 w-full basis-full overflow-hidden text-blue-gray-900 transition-all duration-300 ease-in lg:hidden"
-                        data-collapse="navbar"
-                    >
-                        <div className="container mx-auto pb-2">
+                    <div className="container mx-auto pb-2">
+                        {menuToggle && (
                             <ul className="mt-2 mb-4 flex flex-col gap-2">
-                                <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">
-                                    <a className="flex items-center" href="#">
-                                        Pages
-                                    </a>
+                                <li className="dark:text-white  font-bold block p-1 font-sans text-sm leading-normal text-inherit antialiased">
+                                    <NavLink
+                                        to="/"
+                                        className="flex items-center"
+                                    >
+                                        Home
+                                    </NavLink>
                                 </li>
-                                <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">
-                                    <a className="flex items-center" href="#">
-                                        Account
-                                    </a>
+                                <li className="dark:text-white  font-bold block p-1 font-sans text-sm leading-normal text-inherit antialiased">
+                                    <NavLink
+                                        to="/all-books"
+                                        className="flex items-center"
+                                    >
+                                        All Books
+                                    </NavLink>
                                 </li>
-                                <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">
-                                    <a className="flex items-center" href="#">
-                                        Blocks
-                                    </a>
+                                <li className="dark:text-white  font-bold block p-1 font-sans text-sm leading-normal text-inherit antialiased">
+                                    <NavLink
+                                        to="/add-books"
+                                        className="flex items-center"
+                                    >
+                                        Add Books
+                                    </NavLink>
                                 </li>
-                                <li className="block p-1 font-sans text-sm font-normal leading-normal text-inherit antialiased">
-                                    <a className="flex items-center" href="#">
-                                        Docss
-                                    </a>
+                                <li className="dark:text-white  font-bold block p-1 font-sans text-sm leading-normal text-inherit antialiased">
+                                    <NavLink
+                                        to="/login"
+                                        className="flex items-center"
+                                    >
+                                        Login
+                                    </NavLink>
+                                </li>
+                                <li className="dark:text-white  font-bold block p-1 font-sans text-sm leading-normal text-inherit antialiased">
+                                    <NavLink
+                                        to="/register"
+                                        className="flex items-center"
+                                    >
+                                        Register
+                                    </NavLink>
                                 </li>
                             </ul>
-                            <button
-                                className="middle none center mb-2 block w-full rounded-lg bg-gradient-to-tr from-pink-600 to-pink-400 py-2 px-4 font-sans text-xs font-bold uppercase text-white shadow-md shadow-pink-500/20 transition-all hover:shadow-lg hover:shadow-pink-500/40 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                                type="button"
-                                data-ripple-light="true"
-                            >
-                                <span>Buy Now</span>
-                            </button>
-                        </div>
+                        )}
                     </div>
                 </div>
             </nav>

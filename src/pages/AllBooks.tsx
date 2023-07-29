@@ -6,7 +6,10 @@ const AllBooks = () => {
     const { data } = useGetBooksQuery(undefined);
     return (
         <div className="py-10 dark:bg-slate-800">
-            <Titles title="All Books" subTitle="Find all of your favorite books here" />
+            <Titles
+                title="All Books"
+                subTitle="Find all of your favorite books here"
+            />
             <BooksCard books={data} />
         </div>
     );
