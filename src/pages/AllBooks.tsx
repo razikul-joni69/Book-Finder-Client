@@ -12,7 +12,14 @@ const AllBooks = () => {
         setBooks(data);
     }, [data]);
 
-    
+    const handleFiltering = (e: any) => {
+        if (e?.target?.value === "genre") {
+            const sortedByGenre = [...books].sort((a, b) =>
+                a?.genre?.localeCompare(b?.genre)
+            );
+            setBooks(sortedByGenre);
+        } 
+    };
 
     const handleSearch = (e: any) => {
         e.preventDefault();
