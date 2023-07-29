@@ -1,34 +1,34 @@
 import { useEffect, useState } from "react";
 import BooksCard from "../components/BooksCard/BooksCard";
 import Titles from "../components/Titles/Titles";
+import { IAddBook } from "../globalTypes/globalTypes";
 import { useGetBooksQuery } from "../redux/api/apiSlice";
 
 const AllBooks = () => {
-    let { data } = useGetBooksQuery(undefined);
+    const { data } = useGetBooksQuery(undefined);
     const [searchTerm, setSearchTerm] = useState("");
-    const [books, setBooks] = useState([]);
+    const [books, setBooks] = useState<IAddBook[]>([]);
     useEffect(() => {
         setBooks(data);
-        
-    },[data])
+    }, [data]);
+
     
 
     const handleSearch = (e: any) => {
         e.preventDefault();
         setSearchTerm(e.target?.value);
-        
-            const filteredBooks = data.filter((book: any) => {
-                const lowerCaseTerm = searchTerm.toLowerCase();
-                return (
-                    book.book_name.toLowerCase().includes(lowerCaseTerm) ||
-                    book.author_name.toLowerCase().includes(lowerCaseTerm) ||
-                    book.genre.toLowerCase().includes(lowerCaseTerm)
-                );
-            });
-            console.log(filteredBooks);
-            if(filteredBooks.length >= 0){
-                setBooks(filteredBooks)
-            }
+
+        const filteredBooks = data.filter((book: any) => {
+            const lowerCaseTerm = searchTerm.toLowerCase();
+            return (
+                book.book_name.toLowerCase().includes(lowerCaseTerm) ||
+                book.author_name.toLowerCase().includes(lowerCaseTerm) ||
+                book.genre.toLowerCase().includes(lowerCaseTerm)
+            );
+        });
+        if (filteredBooks.length >= 0) {
+            setBooks(filteredBooks);
+        }
     };
     return (
         <div className="py-10 dark:bg-slate-800">
@@ -56,7 +56,23 @@ const AllBooks = () => {
                         />
                     </div>
                     <div>
-                        
+                        <label
+                            htmlFor="countries"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        >
+                            Filter Data
+                        </label>
+                        <select
+                            onChange={handleFiltering}
+                            id="countries"
+                            className=" lg:min-w-[400px] md:min-w-[300px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        >
+                            <option disabled selected>
+                                Select Filtering Option
+                            </option>
+                            <option value="genre">By Genre</option>
+                            <option value="year">By Year</option>
+                        </select>
                     </div>
                 </div>
             </div>
