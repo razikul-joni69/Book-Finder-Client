@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { useAppDispatch } from "../redux/hooks";
 import {
     continueWithGithub,
@@ -180,7 +181,16 @@ const Login = () => {
                     <div className="p-5">
                         <div className="grid grid-cols-3 gap-1">
                             <button
-                                // onClick={handleFacebookLogin}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    Swal.fire({
+                                        icon: "info",
+                                        title: "Facebook Login Not Implemented Yet!",
+                                        text: "I am working on it. Facebook Login will be available soon!",
+                                        showConfirmButton: true,
+                                        timer: 5000,
+                                    });
+                                }}
                                 type="button"
                                 className="transition duration-200 border border-gray-200 dark:text-white text-gray-500 w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-normal text-center inline-block"
                             >

@@ -13,7 +13,7 @@ export const api = createApi({
                 method: "POST",
                 body: book,
             }),
-            invalidatesTags: ["reviews"],
+            invalidatesTags: ["updateBook"],
         }),
         getBooks: builder.query({
             query: () => `/api/v1/books`,

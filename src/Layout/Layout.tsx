@@ -13,6 +13,9 @@ import { showErrorMessage } from "../utils/NotifyToast";
 
 const Layout = () => {
     const dispatch = useAppDispatch();
+    const { user: loggedInUser, isLoading } = useAppSelector(
+        (state) => state.user
+    );
 
     useEffect(() => {
         dispatch(setLoading(true));
@@ -37,9 +40,7 @@ const Layout = () => {
                 dispatch(setLoading(false));
             }
         });
-    }, [dispatch]);
-
-    const { isLoading } = useAppSelector((state) => state.user);
+    }, [dispatch, loggedInUser?.email]);
 
     if (isLoading) {
         return <Loading />;

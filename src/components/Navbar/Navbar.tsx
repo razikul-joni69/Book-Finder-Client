@@ -113,30 +113,54 @@ const Navbar = () => {
                         </ul>
                         <div className="ml-auto mr-5">
                             {user?.email ? (
-                                <Dropdown
-                                    menu={{ items }}
-                                    placement="bottomRight"
-                                >
-                                    <a onClick={(e) => e.preventDefault()}>
-                                        <Avatar
-                                            className="cursor-pointer border-2 border-lime-600"
-                                            size="large"
-                                            src={user?.img}
-                                        />
-                                    </a>
-                                </Dropdown>
+                                <>
+                                    <Button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            signOut(auth)
+                                                .then(() => {
+                                                    dispatch(setUser(null));
+                                                    showSuccessMessage(
+                                                        "SignOut Successful! 🆗"
+                                                    );
+                                                })
+                                                .catch((err) => {
+                                                    showErrorMessage(
+                                                        err.message
+                                                    );
+                                                });
+                                        }}
+                                        className="mr-4"
+                                        type="primary"
+                                        danger
+                                    >
+                                        Logout
+                                    </Button>
+                                    <Dropdown
+                                        menu={{ items }}
+                                        placement="bottomRight"
+                                    >
+                                        <a onClick={(e) => e.preventDefault()}>
+                                            <Avatar
+                                                className="cursor-pointer border-2 border-lime-600"
+                                                size="large"
+                                                src={user?.img}
+                                            />
+                                        </a>
+                                    </Dropdown>
+                                </>
                             ) : (
                                 <>
-                                    <NavLink to="/login" className="mr-2">
+                                    <Link to="/login" className="mr-2">
                                         <Button type="primary" danger>
                                             Login
                                         </Button>
-                                    </NavLink>
-                                    <NavLink to="/register">
+                                    </Link>
+                                    <Link to="/register">
                                         <Button type="primary" danger>
                                             Register
                                         </Button>
-                                    </NavLink>
+                                    </Link>
                                 </>
                             )}
                         </div>

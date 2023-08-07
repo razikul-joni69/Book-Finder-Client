@@ -1,13 +1,16 @@
 import { updateProfile } from "firebase/auth";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import Loading from "../components/Loading/Loading";
 import auth from "../configs/firebase.config";
 import { IRegisterUser } from "../globalTypes/globalTypes";
-import { useAppDispatch } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
     continueWithGithub,
     continueWithGoogle,
     emailPasswordUserCreate,
+    loginUser,
 } from "../redux/user/userSlice";
 import { showErrorMessage, showSuccessMessage } from "../utils/NotifyToast";
 import saveUserToDb from "../utils/saveUsertoDb";
@@ -18,6 +21,7 @@ const Register = () => {
     const {
         register,
         handleSubmit,
+        reset,
         formState: { errors: formError },
     } = useForm();
 
@@ -26,6 +30,11 @@ const Register = () => {
     const from = location.state?.from?.pathname || "/";
 
     const dispatch = useAppDispatch();
+    const { isLoading } = useAppSelector((state) => state.user);
+
+    if (isLoading) {
+        return <Loading />;
+    }
 
     const onSubmit = async (data: any) => {
         const imageUploadToken = import.meta.env.VITE_Image_Upload_Token;
@@ -45,6 +54,25 @@ const Register = () => {
             gender: data?.gender,
             password: data?.password,
             phone: data?.phone,
+        };
+
+        const setNewUserLogin = async () => {
+            dispatch(
+                loginUser({ email: data?.email, password: data?.password })
+            )
+                .then((res) => {
+                    if (res?.type === "user/login/fulfilled") {
+                        showSuccessMessage("👍 Email SignIn Successful!");
+                        navigate(from, {
+                            replace: true,
+                        });
+                    } else if ("error" in res) {
+                        showErrorMessage(res?.error?.message as string);
+                    }
+                })
+                .catch((err: any) => {
+                    showErrorMessage(err.message);
+                });
         };
 
         if (data.password !== data.confirm) {
@@ -71,8 +99,6 @@ const Register = () => {
                                 emailPasswordUserCreate({ email, password })
                             )
                                 .then((res: any) => {
-                                    console.log(res);
-
                                     if (
                                         res?.type ===
                                             "user/emailPasswordUserCreate/rejected" &&
@@ -102,12 +128,14 @@ const Register = () => {
                                                     "🚫 User Profile not updated!"
                                                 );
                                             });
+
+                                        showSuccessMessage(
+                                            "👍 User Registered Successfully!"
+                                        );
+                                        reset();
+                                        navigate(from);
+                                        setNewUserLogin();
                                     }
-                                    showSuccessMessage(
-                                        "👍 User Registered Successfully!"
-                                    );
-                                    // reset();
-                                    // navigate(from);
                                 })
                                 .catch((err) => {
                                     showErrorMessage(err.message);
@@ -329,7 +357,16 @@ const Register = () => {
                     <div className="p-5">
                         <div className="grid grid-cols-3 gap-1">
                             <button
-                                // onClick={handleFacebookLogin}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    Swal.fire({
+                                        icon: "info",
+                                        title: "Facebook Login Not Implemented Yet!",
+                                        text: "I am working on it. Facebook Login will be available soon!",
+                                        showConfirmButton: true,
+                                        timer: 5000,
+                                    });
+                                }}
                                 type="button"
                                 className="transition duration-200 border dark:text-white border-gray-200 text-gray-500 w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-normal text-center inline-block"
                             >
