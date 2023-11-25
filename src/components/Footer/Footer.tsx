@@ -13,7 +13,7 @@ const Footer = () => {
             <footer className="text-gray-600 dark:text-white body-font">
                 <div className="container px-5 py-24 mx-auto flex md:items-center lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
                     <div className="flex-grow flex flex-wrap md:pl-20 -mb-10 md:mt-0 mt-10 md:text-left text-center">
-                        <div className="lg:w-1/4 md:w-1/2 w-full px-4">
+                        <div className="lg:w-1/3 md:w-1/2 w-full px-4">
                             <div className="">
                                 <a className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900 dark:text-white dark:hover:text-gray-300">
                                     <img
@@ -31,7 +31,7 @@ const Footer = () => {
                                 </p>
                             </div>
                         </div>
-                        <div className="lg:w-1/4 md:w-1/2 w-full px-4">
+                        <div className="lg:w-1/3 md:w-1/2 w-full px-4 pt-8 md:pt-0">
                             <h2 className="title-font font-medium text-gray-900 tracking-widest text-sm mb-3 dark:text-white dark:hover:text-gray-300">
                                 USEFULL LINKS
                             </h2>
@@ -70,34 +70,8 @@ const Footer = () => {
                                 </li>
                             </nav>
                         </div>
-                        <div className="lg:w-1/4 md:w-1/2 w-full px-4">
-                            <h2 className="title-font font-medium text-gray-900 tracking-widest text-sm mb-3 dark:text-white dark:hover:text-gray-300">
-                                Other Links
-                            </h2>
-                            <nav className="list-none mb-10">
-                                <li>
-                                    <a className="text-gray-600 hover:text-gray-800 dark:text-white dark:hover:text-gray-300">
-                                        First Link
-                                    </a>
-                                </li>
-                                <li>
-                                    <a className="text-gray-600 hover:text-gray-800 dark:text-white dark:hover:text-gray-300">
-                                        Second Link
-                                    </a>
-                                </li>
-                                <li>
-                                    <a className="text-gray-600 hover:text-gray-800 dark:text-white dark:hover:text-gray-300">
-                                        Third Link
-                                    </a>
-                                </li>
-                                <li>
-                                    <a className="text-gray-600 hover:text-gray-800 dark:text-white dark:hover:text-gray-300">
-                                        Fourth Link
-                                    </a>
-                                </li>
-                            </nav>
-                        </div>
-                        <div className="lg:w-1/4 md:w-1/2 w-full px-4">
+
+                        <div className="lg:w-1/3 md:w-1/2 w-full px-4">
                             <h2 className="title-font font-medium text-gray-900 tracking-widest text-sm mb-3 dark:text-white dark:hover:text-gray-300">
                                 SUBSCRIBE
                             </h2>
