@@ -4,6 +4,7 @@ import HeroSection from "../components/HeroSection/HeroSection";
 import Loading from "../components/Loading/Loading";
 import Titles from "../components/Titles/Titles";
 import { useGetBooksQuery } from "../redux/api/apiSlice";
+import Contact from "../components/Contact/Contact.jsx";
 
 const Home = () => {
     const { data, isLoading } = useGetBooksQuery(undefined);
@@ -22,7 +23,7 @@ const Home = () => {
                 />
                 <BooksCard books={data?.slice(0, 6)} />
             </div>
-            <NavLink className="flex justify-center pb-10" to="/all-books">
+            <NavLink className="flex justify-center mb-10" to="/all-books">
                 <button
                     className="middle none center rounded-lg bg-pink-500 py-3 px-6 font-sans text-xs font-bold uppercase text-white shadow-md shadow-pink-500/20 transition-all hover:shadow-lg hover:shadow-pink-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                     data-ripple-light="true"
@@ -30,6 +31,7 @@ const Home = () => {
                     See All Books
                 </button>
             </NavLink>
+            <Contact/>
         </div>
     );
 };
