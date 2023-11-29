@@ -114,28 +114,6 @@ const Navbar = () => {
                         <div className="ml-auto mr-5">
                             {user?.email ? (
                                 <>
-                                    <Button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            signOut(auth)
-                                                .then(() => {
-                                                    dispatch(setUser(null));
-                                                    showSuccessMessage(
-                                                        "SignOut Successful! 🆗"
-                                                    );
-                                                })
-                                                .catch((err) => {
-                                                    showErrorMessage(
-                                                        err.message
-                                                    );
-                                                });
-                                        }}
-                                        className="mr-4"
-                                        type="primary"
-                                        danger
-                                    >
-                                        Logout
-                                    </Button>
                                     <Dropdown
                                         menu={{ items }}
                                         placement="bottomRight"

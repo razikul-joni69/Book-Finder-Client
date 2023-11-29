@@ -36,6 +36,7 @@ const AddBooks = () => {
         data.author_name = user?.name;
         data.author_email = user?.email;
         data.author_img = user?.img;
+        data.author_img = user?.img;
         data.reviews = [];
 
         const formData = new FormData();
@@ -142,7 +143,7 @@ const AddBooks = () => {
                                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                     htmlFor="multiple_files"
                                 >
-                                    Upload relevant class image
+                                    Upload relevant book image
                                 </label>
                                 <input
                                     {...register("img", {

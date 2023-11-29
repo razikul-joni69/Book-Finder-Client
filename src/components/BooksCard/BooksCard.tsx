@@ -58,7 +58,7 @@ const BooksCard = (data: any) => {
                                 <img
                                     className="rounded-full w-14 h-14"
                                     src={book?.author_img}
-                                    alt="Bonnie image"
+                                    alt="Author image"
                                 />
                             </div>
                             <div className={`flex-1 min-w-0`}>
