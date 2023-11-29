@@ -136,14 +136,14 @@ const BookDetails = () => {
         addToWishlist(options);
     };
 
-    const handleMarkAsRead = () => {
-        // const options = {
-        //     email: user?.email,
-        //     id,
-        // };
-        showInfoMessage("Not implimented yet. I will do it soon");
-        // markAsRead(options);
-    };
+    // const handleMarkAsRead = () => {
+    //     // const options = {
+    //     //     email: user?.email,
+    //     //     id,
+    //     // };
+    //     showInfoMessage("Not implimented yet. I will do it soon");
+    //     // markAsRead(options);
+    // };
 
     if (isLoading) {
         return <Loading />;
