@@ -6,6 +6,7 @@ import Loading from "../components/Loading/Loading";
 import Newsletter from "../components/Newsletter/Newsletter.tsx";
 import Titles from "../components/Titles/Titles";
 import { useGetBooksQuery } from "../redux/api/apiSlice";
+import FeaturedCategories from "../components/FeaturedCategories/FeaturedCategories.tsx";
 
 const Home = () => {
     const { data, isLoading } = useGetBooksQuery(undefined);
@@ -32,6 +33,7 @@ const Home = () => {
                     See All Books
                 </button>
             </NavLink>
+            <FeaturedCategories/>
             <Contact />
             <Newsletter />
         </div>
