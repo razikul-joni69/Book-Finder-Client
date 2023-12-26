@@ -16,7 +16,6 @@ import {
 import { useAppSelector } from "../../redux/hooks";
 import {
     showErrorMessage,
-    showInfoMessage,
     showSuccessMessage,
     showWarning,
 } from "../../utils/NotifyToast";

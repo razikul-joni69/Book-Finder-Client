@@ -1,10 +1,11 @@
 import { NavLink } from "react-router-dom";
 import BooksCard from "../components/BooksCard/BooksCard";
+import Contact from "../components/Contact/Contact.jsx";
 import HeroSection from "../components/HeroSection/HeroSection";
 import Loading from "../components/Loading/Loading";
+import Newsletter from "../components/Newsletter/Newsletter.tsx";
 import Titles from "../components/Titles/Titles";
 import { useGetBooksQuery } from "../redux/api/apiSlice";
-import Contact from "../components/Contact/Contact.jsx";
 
 const Home = () => {
     const { data, isLoading } = useGetBooksQuery(undefined);
@@ -31,7 +32,8 @@ const Home = () => {
                     See All Books
                 </button>
             </NavLink>
-            <Contact/>
+            <Contact />
+            <Newsletter />
         </div>
     );
 };
